@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<string name="device_unsupport_vulkan_msg">사용 중인 기기는 Vulkan을 지원하지 않으며 이 애플리케이션을 실행하기 위한 최소 요구 사항을 충족시키지 못합니다. 종료하십시오.</string>
 
 	<string name="use_cores_ppu">코어(PPU) 사용</string>
 	<string name="use_cores_spu">코어(SPU) 사용</string>

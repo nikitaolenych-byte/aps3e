@@ -17,12 +17,8 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Emulator
+public class Emulator extends aenu.emulator.Emulator
 {
-	public static class BootException extends Exception{
-	}
-	public static class ConfigFileException extends Exception{
-	}
 	public static class MetaInfo implements Serializable{
 		String eboot_path;
 		String iso_uri;
@@ -152,86 +148,7 @@ public class Emulator
 		}
 	}
 
-	public static class Config{
-
-		String config_path=null;
-		private long n_handle;
-
-		/*private Config(String config_path) throws ConfigFileException
-		{
-			this.config_path=config_path;
-			if((n_handle=native_open_config_file(config_path))==0)
-				throw new ConfigFileException();
-		}*/
-
-		private native long native_open_config(String config_str) ;
-		private native String native_close_config(long n_handle);
-		private native long native_open_config_file(String config_path) ;
-		private native String native_load_config_entry(long n_handle,String tag);
-
-		private native String[] native_load_config_entry_ty_arr(long n_handle,String tag);
-		private native void native_save_config_entry(long n_handle,String tag,String val);
-
-		private native void native_save_config_entry_ty_arr(long n_handle,String tag,String[] val);
-		private native void native_close_config_file(long n_handle,String config_path);
-		public static Config open_config_file(String config_path) throws ConfigFileException
-		{
-			Config config=new Config();
-			config.config_path=config_path;
-			if((config.n_handle=config.native_open_config_file(config_path))==0)
-				throw new ConfigFileException();
-			return config;
-		}
-
-		public static Config open_config_from_string(String config_str) throws ConfigFileException
-		{
-			Config config=new Config();
-			if((config.n_handle=config.native_open_config(config_str))==0)
-				throw new ConfigFileException();
-			return config;
-		}
-
-		public String load_config_entry(String tag)
-		{
-			return native_load_config_entry(n_handle,tag);
-		}
-
-
-		public String[] load_config_entry_ty_arr(String tag)
-		{
-			return native_load_config_entry_ty_arr(n_handle,tag);
-		}
-		public void save_config_entry(String tag,String val)
-		{
-			native_save_config_entry(n_handle,tag,val);
-		}
-
-		public void save_config_entry_ty_arr(String tag,String[] val)
-		{
-			native_save_config_entry_ty_arr(n_handle,tag,val);
-		}
-		public void close_config_file()
-		{
-			if(config_path==null)
-				throw new RuntimeException("should use method close_config");
-			native_close_config_file(n_handle,config_path);
-		}
-
-		public String close_config()
-		{
-			if(config_path!=null)
-				throw new RuntimeException("should use method close_config_file");
-			return native_close_config(n_handle);
-		}
-	}
-
-	/*public static String nc_get_emu_proc_name(){
-		return Application.get_emu_proc_name();
-	}*/
-	
-	public final static Emulator get=new Emulator();
-
-	public void setup_env(Application app){
+	public static void setup_preload_env(Application app){
 		aenu.lang.System.setenv("APS3E_DATA_DIR",app.get_app_data_dir().getAbsolutePath());
 		aenu.lang.System.setenv("APS3E_LOG_DIR",app.get_app_log_dir().getAbsolutePath());
 		aenu.lang.System.setenv("APS3E_NATIVE_LIB_DIR",app.get_native_lib_dir());
@@ -561,6 +478,14 @@ public class Emulator
 		}
 	}
 
+	public static Emulator get=null;
+
+	public static void load_library(){
+		if(get!=null)
+			throw new RuntimeException("Library already loaded");
+		get=new Emulator();
+		System.loadLibrary("e");
+	}
 	public boolean support_custom_driver(){
 		try {
 			return new File("/dev/kgsl-3d0").exists();
@@ -568,6 +493,11 @@ public class Emulator
 			return false;
 		}
 	}
+
+	public void set_env(String k,String v){
+		aenu.lang.System.setenv(k,v);
+	}
+	public native void setup_game_id(String id);
 
 	 public native String[] get_support_llvm_cpu_list();
 
@@ -611,24 +541,24 @@ public class Emulator
         return true;
 	}
 	public native boolean install_pkg(int pkg_fd);
-	
+
 	//public native boolean inatall_iso(String iso_path,String game_dir);
-	public native void setup_game_info(MetaInfo info);
+	/*public native void setup_game_info(MetaInfo info);
 	public native void setup_surface(Surface sf);
 	public native void boot() throws BootException;
-	
+
 	public native void key_event(int key_code,boolean pressed,int value);
 
 	public native void quit();
 
 	public native boolean is_running();
 	public native boolean is_paused();
-	
+
 	public native void pause();
-	
+
 	public native void resume();
-    
-    public native void change_surface(int w,int h);
+
+    public native void change_surface(int w,int h);*/
 
     public void key_event(int key_code,boolean pressed){
         key_event(key_code,pressed,255);

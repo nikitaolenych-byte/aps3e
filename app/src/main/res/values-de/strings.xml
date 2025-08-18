@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="device_unsupport_vulkan_msg">Ihr Gerät unterstützt Vulkan nicht und erfüllt nicht die mindestens erforderlichen Anforderungen, um diese Anwendung auszuführen. Bitte beenden Sie.</string>
+
     <string name="use_cores_ppu">Kerne verwenden (PPU)</string>
     <string name="use_cores_spu">Kerne verwenden (SPU)</string>
     <string name="use_cores_rsx">Kerne verwenden (RSX)</string>

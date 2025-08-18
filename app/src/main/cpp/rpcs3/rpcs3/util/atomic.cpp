@@ -1,6 +1,6 @@
 #include "atomic.hpp"
 
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__)
 #define USE_FUTEX
 #elif !defined(_WIN32)
 #define USE_STD
@@ -40,6 +40,10 @@ static bool has_waitv()
 	}();
 
 	return s_has_waitv;
+}
+#elif defined(__ANDROID__)
+constexpr bool has_waitv() {
+    return false;
 }
 #endif
 
@@ -860,7 +864,7 @@ atomic_wait_engine::wait(const void* data, u32 old_value, u64 timeout, atomic_wa
 	uint ext_size = 0;
 
 
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__)
 	::timespec ts{};
 	if (timeout + 1)
 	{
@@ -1257,7 +1261,7 @@ void atomic_wait_engine::set_one_time_use_wait_callback(bool(*cb)(u64 progress))
 void atomic_wait_engine::notify_one(const void* data)
 {
 
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__)
 	if (has_waitv())
 	{
 		futex(const_cast<void*>(data), FUTEX_WAKE_PRIVATE, 1);
@@ -1281,7 +1285,7 @@ SAFE_BUFFERS(void)
 atomic_wait_engine::notify_all(const void* data)
 {
 
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__)
 	if (has_waitv())
 	{
 		futex(const_cast<void*>(data), FUTEX_WAKE_PRIVATE, INT_MAX);

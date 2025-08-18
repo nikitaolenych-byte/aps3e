@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string name="device_unsupport_vulkan_msg">دستگاه شما از Vulkan پشتیبانی نمی‌کند و حداقل نیازمندی‌های لازم را برای اجرای این برنامه فراهم نمی‌کند، لطفاً خارج شوید.</string>
+
     <string name="use_cores_ppu">استفاده از هسته‌ها (PPU)</string>
     <string name="use_cores_spu">استفاده از هسته‌ها (SPU)</string>
     <string name="use_cores_rsx">استفاده از هسته‌ها (RSX)</string>

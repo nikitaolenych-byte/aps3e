@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">aPS3e</string>
+
+    <string name="device_unsupport_vulkan_msg">Twoje urządzenie nie obsługuje Vulkan oraz nie spełnia minimalnych wymagań koniecznych do uruchomienia tej aplikacji, proszę wyjść.</string>
+
     <string name="use_cores_ppu">Używaj rdzeni (PPU)</string>
     <string name="use_cores_spu">Używaj rdzeni (SPU)</string>
     <string name="use_cores_rsx">Używaj rdzeni (RSX)</string>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<string name="device_unsupport_vulkan_msg">อุปกรณ์ของคุณไม่รองรับ Vulkan และไม่สามารถปฏิบัติตามข้อกำหนดขั้นต่ำเพื่อเรียกใช้งานแอปพลิเคชันนี้ได้ กรุณาออก</string>
 
 	<string name="use_cores_ppu">ใช้คอร์ (PPU)</string>
 	<string name="use_cores_spu">ใช้คอร์ (SPU)</string>

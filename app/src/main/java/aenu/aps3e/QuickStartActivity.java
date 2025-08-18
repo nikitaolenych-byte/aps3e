@@ -47,7 +47,7 @@ import kotlin.contracts.Returns;
 public class QuickStartActivity extends AppCompatActivity {
 
     static final String ACTION_REENTRY="aenu.intent.action.REENTRY_QUISK_START";
-    static final int DELAY_ON_CREATE=0xaa00;
+    static final int DELAY_ON_CREATE=0xaeae0000;
 
     List<LinearLayout> layout_list;
     ProgressBar progress;
@@ -64,42 +64,48 @@ public class QuickStartActivity extends AppCompatActivity {
                 delay_dialog.dismiss();
                 delay_dialog=null;
             }
-            System.loadLibrary("e");
-            if(!ACTION_REENTRY.equals(getIntent().getAction())&&Application.get_default_config_file().exists()){
-                goto_main_activity();
-                return true;
-            }
-
-            getSupportActionBar().setTitle(R.string.welcome);
-            setContentView(R.layout.activity_quick_start);
-            MainActivity.mk_dirs();
-            try{config=Emulator.Config.open_config_from_string(load_default_config_str(QuickStartActivity.this));}catch (Exception e){}
-            init_layout_list();
-            select_layout(0);
+            on_create();
             return true;
         }
     });
+
+    void on_create(){
+        if(!ACTION_REENTRY.equals(getIntent().getAction())&&Application.get_default_config_file().exists()){
+            goto_main_activity();
+            return;
+        }
+
+        getSupportActionBar().setTitle(R.string.welcome);
+        setContentView(R.layout.activity_quick_start);
+        MainActivity.mk_dirs();
+        try{config=Emulator.Config.open_config_from_string(load_default_config_str(QuickStartActivity.this));}catch (Exception e){}
+        init_layout_list();
+        select_layout(0);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(ProcessorInfo.gpu_get_physical_device_name_vk().contains("Adreno (TM) 5")
-        || ProcessorInfo.gpu_get_physical_device_name_vk().contains("Adreno (TM) 6")){
-            delay_dialog=ProgressTask.create_progress_dialog( this,getString(R.string.loading));
-            delay_dialog.show();
-            new Thread(){
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(500);
-                        delay_on_create.sendEmptyMessage(DELAY_ON_CREATE);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }.start();
+
+        if(!Application.should_delay_load()){
+            on_create();
             return;
         }
-        delay_on_create.sendEmptyMessage(DELAY_ON_CREATE);
+
+        delay_dialog=ProgressTask.create_progress_dialog( this,getString(R.string.loading));
+        delay_dialog.show();
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                    Emulator.load_library();
+                    Thread.sleep(100);
+                    delay_on_create.sendEmptyMessage(DELAY_ON_CREATE);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -233,9 +239,31 @@ public class QuickStartActivity extends AppCompatActivity {
         });
     }
 
+    void set_not_support_vulkan_layout(){
+        layout_list.get(0).setVisibility(View.VISIBLE);
+
+        progress.setMax(1);
+        progress.setProgress(1);
+
+        findViewById(R.id.prev_step).setVisibility(View.GONE);
+
+        ((Button)findViewById(R.id.next_step)).setText(R.string.quit);
+        ((Button)findViewById(R.id.next_step)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {QuickStartActivity.this.finish();}
+        });
+
+        ((TextView)layout_list.get(0).findViewById(R.id.welcome_text2))
+                .setText(R.string.device_unsupport_vulkan_msg);
+    }
     void select_layout(int pos){
         for(int i=0;i<layout_list.size();i++){
             layout_list.get(i).setVisibility(View.GONE);
+        }
+
+        if(!Application.device_support_vulkan()){
+            set_not_support_vulkan_layout();
+            return;
         }
 
         page=pos;

@@ -2433,7 +2433,7 @@ void thread_ctrl::wait_for(u64 usec, [[maybe_unused]] bool alert /* true */)
 		usec = 50000;
 	}
 
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__)
 	static thread_local struct linux_timer_handle_t
 	{
 		// Allocate timer only if needed (i.e. someone calls wait_for with alert and short period)
@@ -2541,7 +2541,7 @@ void thread_ctrl::wait_for_accurate(u64 usec)
 		fmt::throw_exception("thread_ctrl::wait_for_accurate: unsupported amount");
 	}
 
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__)
 	return wait_for(usec, false);
 #else
 	using namespace std::chrono_literals;

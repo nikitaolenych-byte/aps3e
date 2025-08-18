@@ -216,7 +216,7 @@ void pad_thread::update_pad_states()
 	}
 }
 
-namespace aps3e_emu{
+namespace ae{
     extern pthread_mutex_t key_event_mutex;
 }
 
@@ -333,13 +333,13 @@ void pad_thread::operator()()
 
 		if (pad_mode == pad_handler_mode::single_threaded)
 		{
-			pthread_mutex_lock(&aps3e_emu::key_event_mutex);
+			pthread_mutex_lock(&ae::key_event_mutex);
 			for (auto& handler : m_handlers)
 			{
 				handler.second->process();
 				connected_devices += handler.second->connected_devices;
 			}
-			pthread_mutex_unlock(&aps3e_emu::key_event_mutex);
+			pthread_mutex_unlock(&ae::key_event_mutex);
 		}
 		else
 		{

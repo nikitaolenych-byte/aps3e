@@ -3,6 +3,7 @@
     <!--string name="app_name">aPS3e Premium</string-->
 	<string name="app_name">aPS3e</string>
 
+	<string name="device_unsupport_vulkan_msg">Your device does not support Vulkan and cannot meet the minimum requirements to run this application, please exit.</string>
 	<string name="use_cores_ppu">Use Cores(PPU)</string>
 	<string name="use_cores_spu">Use Cores(SPU)</string>
 	<string name="use_cores_rsx">Use Cores(RSX)</string>

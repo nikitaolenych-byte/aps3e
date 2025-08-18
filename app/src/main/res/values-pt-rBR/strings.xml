@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="device_unsupport_vulkan_msg">Seu dispositivo não suporta Vulkan e não atende aos requisitos mínimos para executar este aplicativo, por favor, saia.</string>
+
     <string name="use_cores_ppu">Usar Núcleos(PPU)</string>
     <string name="use_cores_spu">Usar Núcleos(SPU)</string>
     <string name="use_cores_rsx">Usar Núcleos(RSX)</string>

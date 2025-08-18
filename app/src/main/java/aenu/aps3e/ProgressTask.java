@@ -61,6 +61,7 @@ public class ProgressTask {
     };
         static final Dialog create_progress_dialog(Context context, String progress_message){
             ProgressDialog d=new ProgressDialog(context);
+            if(progress_message!=null)
             d.setMessage(progress_message);
             d.setCanceledOnTouchOutside(false);
             d.setOnKeyListener(new DialogInterface.OnKeyListener(){

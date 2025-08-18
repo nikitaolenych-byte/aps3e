@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+	<string name="device_unsupport_vulkan_msg">आपका डिवाइस Vulkan का समर्थन नहीं करता है और इस एप्लिकेशन को चलाने के लिए न्यूनतम आवश्यकताओं को पूरा नहीं कर सकता है, कृपया बाहर निकलें।</string>
+
 	<string name="use_cores_ppu">पीपीयू कोर्स उपयोग करें</string>
 	<string name="use_cores_spu">एसपीयू कोर्स उपयोग करें</string>
 	<string name="use_cores_rsx">आरएसएक्स कोर्स उपयोग करें</string>

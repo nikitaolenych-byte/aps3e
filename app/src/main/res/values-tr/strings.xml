@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<string name="device_unsupport_vulkan_msg">Cihazınız Vulkan desteklemiyor ve bu uygulamayı çalıştırmak için gerekli olan minimum gereksinimleri karşılamıyor, lütfen çıkın.</string>
 
 	<string name="use_cores_ppu">Çekirdekleri Kullan(PPU)</string>
 	<string name="use_cores_spu">Çekirdekleri Kullan(SPU)</string>

@@ -2,6 +2,8 @@
 
 <resources>
 
+    <string name="device_unsupport_vulkan_msg">お使いの端末はVulkanをサポートしていません。このアプリケーションを実行するために必要な最低限の要件を満たしていませんので、終了してください。</string>
+
     <string name="use_cores_ppu">コアを使用する（PPU）</string>
     <string name="use_cores_spu">コアを使用する（SPU）</string>
     <string name="use_cores_rsx">コアを使用する（RSX）</string>

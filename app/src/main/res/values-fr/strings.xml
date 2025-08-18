@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<!--Fallback-->
-    <string name="HOME_MENU_SETTINGS_INPUT_PAD_MODE">Pad Handler Mode</string>
-    <string name="HOME_MENU_SETTINGS_INPUT_PAD_SLEEP">Pad Handler Sleep</string>
-    <string name="CELL_NP_RECVMESSAGE_DIALOG_TITLE_ADD_FRIEND">Add Friend</string>
-    <string name="RPCN_FRIEND_LOGGED_IN">RPCN: %0 logged in</string>
-    <string name="RPCN_FRIEND_LOGGED_OUT">RPCN: %0 logged out</string>
-	<string name="CELL_CROSS_CONTROLLER_MSG">Start on the PS Vita system.\nIf you have not installed, go to [Remote Play] on the PS Vita system and start [Cross-Controller] from the LiveArea™ screen.</string>
-	<string name="gratitude_content">Thanks Ruban for all the ICONS\n\n
-		Thanks to SRC267 (Sting) for managing reddit/discord\n\n
-		Thanks to 妖妖 for test\n\n
-		Thanks to 再见某人 for donating GPD XP, which has been a great help in the testing process.\n\n
-		Thanks to 再见某人 for donating the development equipment, which has been instrumental in advancing the project.\n\n
-		Thanks to the following people who provided financial support for this project (Initial stage,sort by date):\n\n</string>
+	<string name="device_unsupport_vulkan_msg">Votre appareil ne prend pas en charge Vulkan et ne satisfait pas aux exigences minimales requises pour exécuter cette application. Veuillez quitter.</string>
+    <string name="HOME_MENU_SETTINGS_INPUT_PAD_MODE">Mode du gestionnaire de manette</string>
+    <string name="HOME_MENU_SETTINGS_INPUT_PAD_SLEEP">Veille du gestionnaire de manette</string>
+    <string name="CELL_NP_RECVMESSAGE_DIALOG_TITLE_ADD_FRIEND">Ajouter un ami</string>
+    <string name="RPCN_FRIEND_LOGGED_IN">RPCN : %0 s‘est connecté</string>
+    <string name="RPCN_FRIEND_LOGGED_OUT">RPCN : %0 s’est déconnecté</string>
+	<!--string name="CELL_CROSS_CONTROLLER_MSG">Démarrez sur le système PS Vita.\nSi vous ne l’avez pas installé, accédez à [Lecture à distance] sur le système PS Vita et démarrez [Cross-Controller] depuis l'écran LiveArea™.</string-->
+	<!--string name="gratitude_content">Merci à Ruban pour toutes les icônes\n\n
+		Merci à SRC267 (Sting) pour la gestion de reddit/discord\n\n
+		Merci à 妖妖 pour les tests\n\n
+		Merci à 再见某人 pour le don d‘une GPD XP, très utile pendant le processus de test.\n\n
+		Merci à 再见某人 pour le don du matériel de développement, essentiel à l'avancement du projet.\n\n
+		Merci aux personnes suivantes qui ont apporté un soutien financier à ce projet (phase initiale, triés par date) :\n\n</string-->
 
 
 	<string name="use_cores_ppu">Utiliser les coeurs (PPU)</string>

@@ -180,110 +180,6 @@ LOG_CHANNEL(sys_log, "SYS");
 
 #include "aps3e_util.cpp"
 
-static void j_setup_game_info(JNIEnv* env,jobject self,jobject meta_info ){
-
-        jclass clsMetaInfo = env->FindClass("aenu/aps3e/Emulator$MetaInfo");
-        jfieldID f_eboot = env->GetFieldID(clsMetaInfo, "eboot_path", "Ljava/lang/String;");
-        jfieldID f_iso_fd  = env->GetFieldID(clsMetaInfo, "iso_fd", "I");
-        jfieldID f_id = env->GetFieldID(clsMetaInfo, "serial", "Ljava/lang/String;");
-        jstring f_eboot_v = (jstring) env->GetObjectField(meta_info, f_eboot );
-        jstring f_id_v = (jstring) env->GetObjectField(meta_info, f_id);
-
-    const char *id = env->GetStringUTFChars(f_id_v, nullptr);
-
-    aps3e_emu::game_id = std::string(id);
-
-        if(f_eboot_v!=NULL) {
-            const char *eboot = env->GetStringUTFChars(f_eboot_v, nullptr);
-            aps3e_emu::eboot_path = std::string(eboot);
-
-            env->ReleaseStringUTFChars(f_eboot_v, eboot);
-        }else{
-            aps3e_emu::iso_fd = env->GetIntField(meta_info, f_iso_fd);
-        }
-
-    env->ReleaseStringUTFChars(f_id_v, id);
-
-}
-
-static void j_boot(JNIEnv* env,jobject self){
-	LOGW("f_init_pre  ");
-	aps3e_log.notice("f_init_pre  ");
-
-	LOGW("ANativeWindow %d %d",aps3e_emu::w,aps3e_emu::h);
-
-	std::thread yy(aps3e_emu::g_emu_thr);
-	yy.detach();
-
-	LOGW("f_init_end");
-	aps3e_log.notice("f_init_end");
-
-}
-
-static void j_change_surface(JNIEnv* env,jobject self,jint w,jint h){
-
-    aps3e_emu::w=w;
-    aps3e_emu::h=h;
-}
-
-static void j_setup_surface(JNIEnv* env,jobject self,jobject surface){
-
-    if(aps3e_emu::wnd){
-    ANativeWindow_release(aps3e_emu::wnd);
-        aps3e_emu::wnd=nullptr;}
-    if(surface) {
-        aps3e_emu::wnd=ANativeWindow_fromSurface(env,surface);
-        aps3e_emu::w=ANativeWindow_getWidth(aps3e_emu::wnd);
-        aps3e_emu::h=ANativeWindow_getHeight(aps3e_emu::wnd);
-    }
-}
-
-static void j_key_event(JNIEnv* env,jobject self,jint key_code,jboolean pressed,jint value){
-	pthread_mutex_lock(&aps3e_emu::key_event_mutex);
-	{
-		auto* pad_thr=g_fxo->try_get<named_thread<pad_thread>>();
-        if(pad_thr){
-            auto xx=pad_thr->get_handlers().at(pad_handler::keyboard);
-            std::shared_ptr<AndroidVirtualPadHandler> padh=std::dynamic_pointer_cast<AndroidVirtualPadHandler>(xx);
-            padh->Key(static_cast<u32>(key_code), static_cast<bool>(pressed),value);
-        }
-	}
-	pthread_mutex_unlock(&aps3e_emu::key_event_mutex);
-}
-
-static void j_pause(JNIEnv* env,jobject self){
-
-    pthread_mutex_lock(&aps3e_emu::emu_mutex);
-    aps3e_emu::emu_status=aps3e_emu::EmuThr::STATUS_REQUEST_PAUSE;
-	while(aps3e_emu::emu_status==aps3e_emu::EmuThr::STATUS_REQUEST_PAUSE)
-        pthread_cond_wait(&aps3e_emu::emu_cond,&aps3e_emu::emu_mutex);
-    pthread_mutex_unlock(&aps3e_emu::emu_mutex);
-}
-
-static void j_resume(JNIEnv* env,jobject self){
-    pthread_mutex_lock(&aps3e_emu::emu_mutex);
-    aps3e_emu::emu_status=aps3e_emu::EmuThr::STATUS_REQUEST_RESUME;
-    while(aps3e_emu::emu_status==aps3e_emu::EmuThr::STATUS_REQUEST_RESUME)
-        pthread_cond_wait(&aps3e_emu::emu_cond,&aps3e_emu::emu_mutex);
-    pthread_mutex_unlock(&aps3e_emu::emu_mutex);
-}
-
-static jboolean j_is_running(JNIEnv* env,jobject self){
-    return aps3e_emu::emu_status==aps3e_emu::EmuThr::STATUS_RUNNING;
-}
-
-static jboolean j_is_paused(JNIEnv* env,jobject self){
-    return aps3e_emu::emu_status==aps3e_emu::EmuThr::STATUS_PAUSED;
-}
-
-static void j_quit(JNIEnv* env,jobject self){
-    pthread_mutex_lock(&aps3e_emu::emu_mutex);
-    aps3e_emu::emu_status=aps3e_emu::EmuThr::STATUS_REQUEST_STOP;
-    while(aps3e_emu::emu_status==aps3e_emu::EmuThr::STATUS_REQUEST_STOP)
-        pthread_cond_wait(&aps3e_emu::emu_cond,&aps3e_emu::emu_mutex);
-    pthread_mutex_unlock(&aps3e_emu::emu_mutex);
-}
-
 /*
 static jboolean j_install_firmware(JNIEnv* env,jobject self,jstring pup_path){
 	jboolean is_copy=false;
@@ -449,7 +345,11 @@ static jobject j_meta_info_from_iso(JNIEnv* env,jobject self,jint fd,jstring jis
 
     return meta_info;
 }
-
+static void j_setup_game_id(JNIEnv* env,jobject self,jstring id){
+    const char* _id=env->GetStringUTFChars(id,NULL);
+    ae::game_id=_id;
+    env->ReleaseStringUTFChars(id,_id);
+}
 /*public native int get_cpu_core_count();
 public native String get_cpu_name(int core_idx);
 public native int get_cpu_max_mhz(int core_idx);*/
@@ -471,7 +371,7 @@ static jboolean support_custom_driver(JNIEnv* env,jobject self){
     return access("/dev/kgsl-3d0",F_OK)==0;
 }*/
 
-int register_Emulator(JNIEnv* env){
+int register_aps3e_Emulator(JNIEnv* env){
 
 	static const JNINativeMethod methods[] = {
 
@@ -495,22 +395,11 @@ int register_Emulator(JNIEnv* env){
 
             { "meta_info_from_iso","(ILjava/lang/String;)Laenu/aps3e/Emulator$MetaInfo;",(void*)j_meta_info_from_iso},
 
-        //{ "setup_context", "(Landroid/content/Context;)V", (void *) j_setup_context },
+        { "setup_game_id", "(Ljava/lang/String;)V", (void *) j_setup_game_id },
 
-        { "setup_game_info", "(Laenu/aps3e/Emulator$MetaInfo;)V", (void *) j_setup_game_info },
-		{ "boot", "()V", (void *) j_boot },
-		{ "pause", "()V", (void *) j_pause},
-		{ "resume", "()V", (void *) j_resume},
 
-        { "is_running", "()Z", (void *) j_is_running},
-        { "is_paused", "()Z", (void *) j_is_paused},
-
-		{ "quit", "()V", (void *) j_quit},
-		{ "key_event", "(IZI)V", (void *) j_key_event},
 		{ "install_pkg", "(I)Z", (void *) j_install_pkg },
 
-        { "change_surface", "(II)V", (void *) j_change_surface },
-        { "setup_surface", "(Landroid/view/Surface;)V", (void *) j_setup_surface },
     };
 
     jclass clazz = env->FindClass("aenu/aps3e/Emulator");
@@ -518,22 +407,6 @@ int register_Emulator(JNIEnv* env){
 
 }
 
-int register_Emulator_cfg(JNIEnv* env){
-
-    static const JNINativeMethod methods[] = {
-
-            { "native_open_config", "(Ljava/lang/String;)J", (void *) open_config_str },
-            { "native_close_config", "(J)Ljava/lang/String;", (void *) close_config_str },
-            { "native_open_config_file", "(Ljava/lang/String;)J", (void *) open_config_file },
-            { "native_load_config_entry", "(JLjava/lang/String;)Ljava/lang/String;", (void *) load_config_entry },
-            { "native_load_config_entry_ty_arr", "(JLjava/lang/String;)[Ljava/lang/String;", (void *) load_config_entry_ty_arr },
-            { "native_save_config_entry", "(JLjava/lang/String;Ljava/lang/String;)V", (void *) save_config_entry },
-            { "native_save_config_entry_ty_arr", "(JLjava/lang/String;[Ljava/lang/String;)V", (void *) save_config_entry_ty_arr },
-            { "native_close_config_file", "(JLjava/lang/String;)V", (void *) close_config_file },
-    };
-    jclass clazz = env->FindClass("aenu/aps3e/Emulator$Config");
-    return env->RegisterNatives(clazz,methods, sizeof(methods)/sizeof(methods[0]));
-}
 
 //esr ctx
   static const esr_context* find_esr_context(const ucontext_t* ctx)
@@ -576,6 +449,9 @@ static void signal_handler(int /*sig*/, siginfo_t* info, void* uct) noexcept
 	};
 }
 
+int register_Emulator(JNIEnv* env);
+int register_Emulator$Config(JNIEnv* env);
+
 extern "C" __attribute__((visibility("default")))
 jint JNI_OnLoad(JavaVM* vm, void* reserved){
 
@@ -588,16 +464,19 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved){
         goto bail;
     }
 
-	if (register_Emulator(env) != JNI_OK) {
-			LOGE("register_Emulator failed");
-			goto bail;
-		}
+    if(register_Emulator(env) != JNI_OK){
+        LOGE("register_Emulator failed");
+        goto bail;
+    }
 
-    if (register_Emulator_cfg(env) != JNI_OK) {
-			LOGE("register_Emulator_cfg failed");
-			goto bail;
-		}
-
+    if(register_Emulator$Config(env) != JNI_OK){
+        LOGE("register_Emulator$Config failed");
+        goto bail;
+    }
+    if (register_aps3e_Emulator(env) != JNI_OK) {
+        LOGE("register_Emulator failed");
+        goto bail;
+    }
     result = JNI_VERSION_1_6;
 
     LOGW("JNI_OnLoad OK");

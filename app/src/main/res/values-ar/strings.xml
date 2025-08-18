@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!--Fallback-->
-    <string name="emulator_settings_video_performance_overlay_font">Font</string>
-    <string name="emulator_settings_audio_disable_sampling_skip">Disable Sampling Skip</string>
+   <string name="device_unsupport_vulkan_msg">جهازك لا يدعم Vulkan ولا يفي الحد الأدنى من المتطلبات لتشغيل هذا التطبيق، يرجى الخروج.</string>
+    <string name="emulator_settings_video_performance_overlay_font">الخط</string>
+    <string name="emulator_settings_audio_disable_sampling_skip">تعطيل تخطي أخذ العينات</string>
 
     <string name="use_cores_ppu">استخدام النوى (PPU)</string>
     <string name="use_cores_spu">استخدام النوى (SPU)</string>

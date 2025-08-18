@@ -13,6 +13,8 @@ import android.app.*;
 import java.io.*;
 import android.content.res.*;
 
+import aenu.hardware.ProcessorInfo;
+
 public class Application extends android.app.Application
 {
 	
@@ -33,7 +35,6 @@ public class Application extends android.app.Application
 	public static void extractAssetsDir(Context context, String assertDir, File outputDir) {
         AssetManager assetManager = context.getAssets();
         try {
-            // 创建输出目录，如果不存在
             if (!outputDir.exists()) {
                 outputDir.mkdirs();
             }
@@ -134,19 +135,30 @@ public class Application extends android.app.Application
         }
     }
 
+    static boolean device_support_vulkan() {
+        return gpu_device_name_vk!=null;
+    }
+
+    static boolean should_delay_load() {
+        if(gpu_device_name_vk==null)
+            throw new RuntimeException("gpu_device_name_vk==null");
+        return gpu_device_name_vk.contains("Adreno (TM) 5")
+                || gpu_device_name_vk.contains("Adreno (TM) 6");
+    }
+
     public  static Context ctx;
+    public static String gpu_device_name_vk;
     @Override
     public void onCreate()
     {
         super.onCreate();
 
         Application.ctx=this;
-        try {
-            Emulator.get.setup_env(this);
-        }finally {
-            //System.loadLibrary("e");
-        }
+        gpu_device_name_vk= ProcessorInfo.gpu_get_physical_device_name_vk();
 
+        Emulator.setup_preload_env(this);
+        if(!should_delay_load())
+            Emulator.load_library();
 
         //get_app_data_dir().mkdirs();
         get_app_log_dir().mkdirs();

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<string name="device_unsupport_vulkan_msg">Ваш пристрій не підтримує Vulkan і не відповідає мінімальним вимогам для запуску цього додатка, будь ласка, вийдіть.</string>
+
 	<string name="use_cores_ppu">Використовувати ядра (PPU)</string>
 	<string name="use_cores_spu">Використовувати ядра (SPU)</string>
 	<string name="use_cores_rsx">Використовувати ядра (RSX)</string>

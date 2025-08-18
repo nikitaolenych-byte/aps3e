@@ -993,7 +993,7 @@ namespace rsx
 
 		g_fxo->get<vblank_thread>().set_thread(std::shared_ptr<named_thread<std::function<void()>>>(new named_thread<std::function<void()>>("VBlank Thread"sv, [this]() -> void
 		{
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__)
 			constexpr u32 host_min_quantum = 10;
 #else
 			constexpr u32 host_min_quantum = 500;
@@ -1017,7 +1017,7 @@ namespace rsx
 				// Calculate time remaining to that time (0 if we passed it)
 				const u64 wait_for = current >= post_event_time ? 0 : post_event_time - current;
 
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__)
 				const u64 wait_sleep = wait_for;
 #else
 				// Substract host operating system min sleep quantom to get sleep time
@@ -2728,7 +2728,7 @@ namespace rsx
 
 		while (true)
 		{
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__)
 			// NOTE: Assumption that timer initialization has succeeded
 			constexpr u64 host_min_quantum = 10;
 #else
@@ -2738,7 +2738,7 @@ namespace rsx
 #endif
 			if (remaining >= host_min_quantum)
 			{
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__)
 				thread_ctrl::wait_for(remaining, false);
 #else
 				// Wait on multiple of min quantum for large durations to avoid overloading low thread cpus

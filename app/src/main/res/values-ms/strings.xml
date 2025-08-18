@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<string name="device_unsupport_vulkan_msg">Peranti anda tidak menyokong Vulkan dan tidak memenuhi keperluan minima untuk menjalankan aplikasi ini, sila keluar.</string>
+
 	<string name="use_cores_ppu">Gunakan Core(PPU)</string>
 	<string name="use_cores_spu">Gunakan Core(SPU)</string>
 	<string name="use_cores_rsx">Gunakan Core(RSX)</string>

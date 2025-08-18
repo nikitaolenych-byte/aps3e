@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="device_unsupport_vulkan_msg">您的设备不支持 Vulkan，无法满足运行此应用程序的最低要求，请退出。</string>
+
     <string name="use_cores_ppu">使用核心(PPU)</string>
     <string name="use_cores_spu">使用核心(SPU)</string>
     <string name="use_cores_rsx">使用核心(RSX)</string>

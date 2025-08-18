@@ -60,16 +60,12 @@ public class CheckBoxPreference extends androidx.preference.CheckBoxPreference{
         TextView title_v=(TextView) holder.itemView.findViewById(android.R.id.title);
         TextView summary_v=(TextView) holder.itemView.findViewById(android.R.id.summary);
         if(is_modify_color){
-            if(title_v!=null)
-                title_v.setTextColor(modify_color);
-            if(summary_v!=null)
-                summary_v.setTextColor(modify_color);
+            if(title_v!=null) title_v.setTextColor(modify_color);
+            if(summary_v!=null) summary_v.setTextColor(modify_color);
         }
         else{
-            if(title_v!=null)
-            title_v.setTextColor(title_v.isEnabled()?title_color:Color.GRAY);
-            if(summary_v!=null)
-            summary_v.setTextColor(summary_v.isEnabled()?summary_color:Color.GRAY);
+            if(title_v!=null) title_v.setTextColor(title_v.isEnabled()?title_color:Color.GRAY);
+            if(summary_v!=null) summary_v.setTextColor(summary_v.isEnabled()?summary_color:Color.GRAY);
         }
     }
 }

@@ -30,23 +30,13 @@ public class EmulatorActivity extends Activity implements View.OnGenericMotionLi
 	public static final String EXTRA_ISO_URI="iso_uri";
 	public static final String EXTRA_GAME_DIR="game_dir";
 
-    static final int DELAY_ON_CREATE=0xaa01;
+    static final int DELAY_ON_CREATE=0xaeae0001;
     private SparseIntArray keysMap = new SparseIntArray();
     private GameFrameView gv;
 
 	private Vibrator vibrator=null;
 	private VibrationEffect vibrationEffect=null;
 	boolean started=false;
-
-	void setup_env(String serial){
-		File custom_cfg=Application.get_custom_cfg_file(serial);
-		if(custom_cfg.exists())
-			aenu.lang.System.setenv("APS3E_CUSTOM_CONFIG_YAML_PATH",custom_cfg.getAbsolutePath());
-
-		boolean enable_log=getSharedPreferences("debug",MODE_PRIVATE).getBoolean("enable_log",false);
-		aenu.lang.System.setenv("APS3E_ENABLE_LOG",Boolean.toString(enable_log));
-	}
-
 
 	int open_iso_fd(String iso_uri) {
         try {
@@ -69,22 +59,28 @@ public class EmulatorActivity extends Activity implements View.OnGenericMotionLi
                 delay_dialog.dismiss();
                 delay_dialog=null;
             }
+			on_create();
+			return true;
+		}
+	});
 
-			System.loadLibrary("e");
-			setContentView(R.layout.emulator_view);
-			gv=(GameFrameView)findViewById(R.id.emulator_view);
+	void on_create(){
+		setContentView(R.layout.emulator_view);
+		gv=(GameFrameView)findViewById(R.id.emulator_view);
 
-			gv.setFocusable(true);
-			gv.setFocusableInTouchMode(true);
-			gv.requestFocus();
+		gv.setFocusable(true);
+		gv.setFocusableInTouchMode(true);
+		gv.requestFocus();
 
-			gv.setOnGenericMotionListener(EmulatorActivity.this);
+		gv.setOnGenericMotionListener(EmulatorActivity.this);
 
-			gv.getHolder().addCallback(EmulatorActivity.this);
+		gv.getHolder().addCallback(EmulatorActivity.this);
 
-			load_key_map_and_vibrator();
+		load_key_map_and_vibrator();
 
-			Emulator.MetaInfo meta_info;
+		Emulator.MetaInfo meta_info=null;
+		//get meta info
+		{
 			try{
 				if((meta_info=(Emulator.MetaInfo) getIntent().getSerializableExtra("meta_info"))!=null){
 
@@ -107,37 +103,58 @@ public class EmulatorActivity extends Activity implements View.OnGenericMotionLi
 				}
 			}catch (Exception e) {
 				Toast.makeText(EmulatorActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-				return true;
 			}
-			setup_env(meta_info.serial);
-			Emulator.get.setup_game_info(meta_info);
-
-			return true;
 		}
-	});
+
+		//setenv
+		{
+			File custom_cfg=Application.get_custom_cfg_file(meta_info.serial);
+			if(custom_cfg.exists())
+				Emulator.get.set_env("APS3E_CUSTOM_CONFIG_YAML_PATH",custom_cfg.getAbsolutePath());
+
+			boolean enable_log=getSharedPreferences("debug",MODE_PRIVATE).getBoolean("enable_log",false);
+			Emulator.get.set_env("APS3E_ENABLE_LOG",Boolean.toString(enable_log));
+		}
+
+		//setup game path
+		{
+			if(meta_info.eboot_path!=null)
+				Emulator.get.setup_game_path(meta_info.eboot_path);
+			else if(meta_info.iso_uri!=null)
+				Emulator.get.setup_game_path(aenu.emulator.Emulator.Path.from(meta_info.iso_uri, meta_info.iso_fd));
+			else
+				throw new RuntimeException("Failed to get meta info");
+		}
+
+		Emulator.get.setup_game_id(meta_info.serial);
+	}
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 		VirtualPadEdit.enable_fullscreen(getWindow());
-		if(ProcessorInfo.gpu_get_physical_device_name_vk().contains("Adreno (TM) 5")
-				|| ProcessorInfo.gpu_get_physical_device_name_vk().contains("Adreno (TM) 6")) {
-            delay_dialog=ProgressTask.create_progress_dialog( this,getString(R.string.loading));
-            delay_dialog.show();
-			new Thread() {
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(500);
-						delay_on_create.sendEmptyMessage(DELAY_ON_CREATE);
-					} catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
-				}
-			}.start();
+
+		if(!Application.should_delay_load()){
+			on_create();
 			return;
 		}
-		delay_on_create.sendEmptyMessage(DELAY_ON_CREATE);
+
+		delay_dialog=ProgressTask.create_progress_dialog( this,getString(R.string.loading));
+		delay_dialog.show();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(500);
+					Emulator.load_library();
+					Thread.sleep(100);
+					delay_on_create.sendEmptyMessage(DELAY_ON_CREATE);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}.start();
+		return;
 	}
 
 	@Override
@@ -145,6 +162,30 @@ public class EmulatorActivity extends Activity implements View.OnGenericMotionLi
 		super.onStart();
 	}
 
+	void show_closing_dialog(){
+		Dialog closing_dialog=ProgressTask.create_progress_dialog( this,null);
+		closing_dialog.show();
+		Handler handler=new Handler(new Handler.Callback() {
+			@Override
+			public boolean handleMessage(@NonNull Message msg) {
+				closing_dialog.dismiss();
+				finish();
+				return true;
+			}
+		});
+
+		new Thread(){
+			@Override
+			public void run() {
+				try {
+					Emulator.get.quit();
+					handler.sendEmptyMessage(0);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}.start();
+	}
 	@Override
 	public void onBackPressed()
 	{
@@ -158,7 +199,9 @@ public class EmulatorActivity extends Activity implements View.OnGenericMotionLi
 				@Override
 				public void onClick(DialogInterface p1, int p2)
 				{
-					try{
+					p1.cancel();
+					show_closing_dialog();
+					/*try{
                         //if(Emulator.get.is_running())
                         //Emulator.get.pause();
 						Emulator.get.quit();
@@ -166,7 +209,7 @@ public class EmulatorActivity extends Activity implements View.OnGenericMotionLi
 				finally{
 					p1.cancel();
 					finish();
-				}
+				}*/
 		}
 				
 			

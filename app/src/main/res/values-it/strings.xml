@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!--Fallback-->
-    <string name="gratitude_content">Thanks Ruban for all the ICONS\n\n
-		Thanks to SRC267 (Sting) for managing reddit/discord\n\n
-		Thanks to 妖妖 for test\n\n
-		Thanks to 再见某人 for donating GPD XP, which has been a great help in the testing process.\n\n
-		Thanks to 再见某人 for donating the development equipment, which has been instrumental in advancing the project.\n\n
-		Thanks to the following people who provided financial support for this project (Initial stage,sort by date):\n\n</string>
-
+    <string name="device_unsupport_vulkan_msg">Il tuo dispositivo non supporta Vulkan e non soddisfa i requisiti minimi necessari per eseguire questa applicazione, per favore esci.</string>
+    <!--string name="gratitude_content">Grazie a Ruban per tutte le ICONE\n\n
+		Grazie a SRC267 (Sting) per la gestione di reddit/discord\n\n
+		Grazie a 妖妖 per i test\n\n
+		Grazie a 再见某人 per aver donato una GPD XP, che è stata di grande aiuto durante il processo di test.\n\n
+		Grazie a 再见某人 per aver donato l'equipaggiamento per lo sviluppo, fondamentale per far avanzare il progetto.\n\n
+		Grazie alle seguenti persone che hanno fornito supporto finanziario per questo progetto (fase iniziale, ordinate per data):\n\n</string-->
 
     <string name="use_cores_ppu">Utilizza Core(PPU)</string>
     <string name="use_cores_spu">Utilizza Core(SPU)</string>

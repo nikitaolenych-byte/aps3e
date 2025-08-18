@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<string name="device_unsupport_vulkan_msg">Thiết bị của bạn không hỗ trợ Vulkan và không đáp ứng được các yêu cầu tối thiểu để chạy ứng dụng này, vui lòng thoát.</string>
+
 	<string name="use_cores_ppu">Sử dụng Nhân (PPU)</string>
 	<string name="use_cores_spu">Sử dụng Nhân (SPU)</string>
 	<string name="use_cores_rsx">Sử dụng Nhân (RSX)</string>

@@ -1,6 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
-// androidx.preference
-
+// SPDX-License-Identifier: WTFPL
 package aenu.preference;
 
 import android.content.Context;
@@ -27,6 +25,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import androidx.preference.R;
 
+//modify from https://github.com/androidx/androidx/blob/androidx-main/preference/preference/src/main/java/androidx/preference/SeekBarPreference.java
 public class SeekBarPreference extends DialogPreference {
 
 

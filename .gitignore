@@ -23,3 +23,16 @@ app/src/main/cpp/glslang_out/
 
 app/src/main/lib/
 app/src/main/libs/
+
+.vs/
+app/src/main/cpp/rpcs3/3rdparty/FAudio/csharp/obj/
+app/src/main/cpp/rpcs3/3rdparty/SoundTouch/soundtouch/source/csharp-example/obj/
+app/src/main/cpp/rpcs3/3rdparty/wolfssl/wolfssl/wrapper/CSharp/wolfSSL-DTLS-PSK-Server/obj/
+app/src/main/cpp/rpcs3/3rdparty/wolfssl/wolfssl/wrapper/CSharp/wolfSSL-DTLS-Server/obj/
+app/src/main/cpp/rpcs3/3rdparty/wolfssl/wolfssl/wrapper/CSharp/wolfSSL-Example-IOCallbacks/obj/
+app/src/main/cpp/rpcs3/3rdparty/wolfssl/wolfssl/wrapper/CSharp/wolfSSL-TLS-Client/obj/
+app/src/main/cpp/rpcs3/3rdparty/wolfssl/wolfssl/wrapper/CSharp/wolfSSL-TLS-PSK-Client/obj/
+app/src/main/cpp/rpcs3/3rdparty/wolfssl/wolfssl/wrapper/CSharp/wolfSSL-TLS-PSK-Server/obj/
+app/src/main/cpp/rpcs3/3rdparty/wolfssl/wolfssl/wrapper/CSharp/wolfSSL-TLS-Server/obj/
+app/src/main/cpp/rpcs3/3rdparty/wolfssl/wolfssl/wrapper/CSharp/wolfSSL-TLS-ServerThreaded/obj/
+app/src/main/cpp/rpcs3/3rdparty/wolfssl/wolfssl/wrapper/CSharp/wolfSSL_CSharp/obj/

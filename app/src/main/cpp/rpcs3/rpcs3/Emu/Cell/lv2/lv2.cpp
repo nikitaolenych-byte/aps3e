@@ -2160,7 +2160,7 @@ bool lv2_obj::wait_timeout(u64 usec, ppu_thread* cpu, bool scale, bool is_usleep
 		}
 
 		u64 remaining = usec - passed;
-#if defined(__linux__)&&!defined(__ANDROID__)
+#if defined(__linux__)
 		// NOTE: Assumption that timer initialization has succeeded
 		constexpr u64 host_min_quantum = 10;
 #else
@@ -2178,7 +2178,7 @@ bool lv2_obj::wait_timeout(u64 usec, ppu_thread* cpu, bool scale, bool is_usleep
 		{
 			if (remaining > host_min_quantum)
 			{
-#if defined(__linux__)&&!defined(__ANDROID__)
+#if defined(__linux__)
 				// With timerslack set low, Linux is precise for all values above
 				wait_for(remaining);
 #else
@@ -2268,7 +2268,7 @@ void lv2_obj::notify_all() noexcept
 
 	u32 notifies[total_waiters]{};
 
-	// There may be 6 waiters, but checking them all may be performance expensive 
+	// There may be 6 waiters, but checking them all may be performance expensive
 	// Instead, check 2 at max, but use the CPU ID index to tell which index to start checking so the work would be distributed across all threads
 
 	atomic_t<u64, 64>* range_lock = nullptr;
