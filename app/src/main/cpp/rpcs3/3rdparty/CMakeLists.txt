@@ -90,18 +90,7 @@ add_subdirectory(hidapi)
 
 
 # Vulkan
-#add_subdirectory(glslang EXCLUDE_FROM_ALL)
-
-if (BUILD_IN_WINDOWS)
-set(glslang_DIR ${CMAKE_SOURCE_DIR}/glslang_out/lib/cmake/glslang)
-else()
-set(glslang_DIR /data/data/com.termux/files/home/glslang_out/lib/cmake/glslang)
-endif()
-
-find_package(glslang REQUIRED)
-
-add_library(3rd_glslang INTERFACE)
-target_link_libraries(3rd_glslang INTERFACE glslang::glslang glslang::SPIRV)
+add_subdirectory(glslang EXCLUDE_FROM_ALL)
 
 # yaml-cpp
 add_subdirectory(yaml-cpp)
@@ -290,30 +279,21 @@ if(USE_SYSTEM_FFMPEG)
 	target_link_libraries(3rdparty_ffmpeg INTERFACE ${FFMPEG_LIBRARIES})
 elseif(ANDROID)
 
-	if (BUILD_IN_WINDOWS)
+	add_subdirectory(ffmpeg EXCLUDE_FROM_ALL)
 
-		target_include_directories(3rdparty_ffmpeg INTERFACE ${CMAKE_SOURCE_DIR}/ffmpeg_out/include)
-
-		target_link_libraries(3rdparty_ffmpeg INTERFACE
-				"${CMAKE_SOURCE_DIR}/ffmpeg_out/lib/libavformat.a"
-				"${CMAKE_SOURCE_DIR}/ffmpeg_out/lib/libavcodec.a"
-				"${CMAKE_SOURCE_DIR}/ffmpeg_out/lib/libswscale.a"
-				"${CMAKE_SOURCE_DIR}/ffmpeg_out/lib/libavutil.a"
-				"${CMAKE_SOURCE_DIR}/ffmpeg_out/lib/libavdevice.a"
-				"${CMAKE_SOURCE_DIR}/ffmpeg_out/lib/libavfilter.a"
-				"${CMAKE_SOURCE_DIR}/ffmpeg_out/lib/libswresample.a")
-	else ()
-		target_include_directories(3rdparty_ffmpeg INTERFACE /data/data/com.termux/files/home/ffmpeg_android/include)
-
-		target_link_libraries(3rdparty_ffmpeg INTERFACE
-				"/data/data/com.termux/files/home/ffmpeg_android/lib/libavformat.a"
-				"/data/data/com.termux/files/home/ffmpeg_android/lib/libavcodec.a"
-				"/data/data/com.termux/files/home/ffmpeg_android/lib/libswscale.a"
-				"/data/data/com.termux/files/home/ffmpeg_android/lib/libavutil.a"
-				"/data/data/com.termux/files/home/ffmpeg_android/lib/libavdevice.a"
-				"/data/data/com.termux/files/home/ffmpeg_android/lib/libavfilter.a"
-				"/data/data/com.termux/files/home/ffmpeg_android/lib/libswresample.a")
-	endif ()
+	target_link_libraries(3rdparty_ffmpeg INTERFACE
+			libavdevice
+			libavfilter
+			libavformat
+			libavcodec
+			libswresample
+			libswscale
+			libavutil
+	)
+	target_include_directories(3rdparty_ffmpeg INTERFACE
+			${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/ffmpeg-5.1.7
+			${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/include/android_aarch64
+	)
 else()
 	message(STATUS "RPCS3: using builtin ffmpeg")
 	add_subdirectory(ffmpeg EXCLUDE_FROM_ALL)
@@ -430,5 +410,5 @@ add_library(3rdparty::soundtouch ALIAS soundtouch)
 add_library(3rdparty::sdl2 ALIAS ${SDL2_TARGET})
 add_library(3rdparty::miniupnpc ALIAS libminiupnpc-static)
 
-add_library(3rdparty::glslang ALIAS 3rd_glslang)
+add_library(3rdparty::glslang ALIAS glslang)
 add_library(3rdparty::adrenotools ALIAS adrenotools)

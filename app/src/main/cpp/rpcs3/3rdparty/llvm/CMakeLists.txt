@@ -15,11 +15,13 @@ if(WITH_LLVM)
 		option(LLVM_INCLUDE_TOOLS OFF)
 		option(LLVM_INCLUDE_UTILS OFF)
 		option(LLVM_CCACHE_BUILD OFF)
-		
-	if(ANDROID)
-		option(LLVM_ENABLE_BACKTRACES OFF)
-		set(LLVM_TARGETS_TO_BUILD "AArch64" CACHE STRING "Semicolon-separated list of targets to build, or \"all\"." FORCE)
-	endif()
+
+		if(ANDROID)
+			option(LLVM_ENABLE_BACKTRACES OFF)
+			set(LLVM_TARGETS_TO_BUILD "AArch64" CACHE STRING "Semicolon-separated list of targets to build, or \"all\"." FORCE)
+			set(LLVM_TARGET_ARCH "AArch64" CACHE STRING "" FORCE)
+			add_compile_definitions(LLVM_HOST_TRIPLE="aarch64-linux-android")
+		endif()
 			
 		set(LLVM_ENABLE_WARNINGS OFF CACHE BOOL "Enable compiler warnings.")
 
@@ -42,7 +44,7 @@ if(WITH_LLVM)
 		endif()
 
 		# LLVM needs to be built out-of-tree
-		add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/llvm/llvm ${CMAKE_CURRENT_BINARY_DIR}/llvm_build EXCLUDE_FROM_ALL)
+		add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/llvm-19.1.7/llvm ${CMAKE_CURRENT_BINARY_DIR}/llvm_build EXCLUDE_FROM_ALL)
 		set(LLVM_DIR "${CMAKE_CURRENT_BINARY_DIR}/llvm_build/lib/cmake/llvm/")
 
 		set(STATIC_LINK_LLVM ON CACHE BOOL "Link against LLVM statically. This will get set to ON if you build LLVM from the submodule." FORCE)

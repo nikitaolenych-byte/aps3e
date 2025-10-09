@@ -12,10 +12,9 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     endif()
 endif()
 
-option(BUILD_IN_WINDOWS "在WINDOWS上构建" ON)
 option(USE_NATIVE_INSTRUCTIONS "USE_NATIVE_INSTRUCTIONS makes rpcs3 compile with -march=native, which is useful for local builds, but not good for packages." OFF)
 option(WITH_LLVM "Enable usage of LLVM library" ON)
-option(BUILD_LLVM "Build LLVM from git submodule" OFF)
+option(BUILD_LLVM "Build LLVM from git submodule" ON)
 option(STATIC_LINK_LLVM "Link against LLVM statically. This will get set to ON if you build LLVM from the submodule." ON)
 option(USE_FAUDIO "FAudio audio backend" OFF)
 option(USE_LIBEVDEV "libevdev-based joystick support" OFF)
@@ -28,16 +27,6 @@ option(USE_SYSTEM_SDL "Prefer system SDL instead of the builtin one" OFF)
 option(USE_SYSTEM_FFMPEG "Prefer system ffmpeg instead of the prebuild one" OFF)
 option(USE_SYSTEM_OPENAL "Prefer system OpenAL instead of the prebuild one" OFF)
 option(USE_SYSTEM_CURL "Prefer system Curl instead of the prebuild one" OFF)
-
-if(DEFINED ENV{BUILD_IN_WINDOWS})
-    set(BUILD_IN_WINDOWS $ENV{BUILD_IN_WINDOWS} CACHE BOOL "" FORCE)
-endif()
-
-if (BUILD_IN_WINDOWS)
-    set(LLVM_DIR ${CMAKE_SOURCE_DIR}/llvm_out/lib/cmake/llvm)
-else ()
-    set(LLVM_DIR /data/data/com.termux/files/home/llvm_out/lib/cmake/llvm)
-endif ()
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/rpcs3/buildfiles/cmake")
 

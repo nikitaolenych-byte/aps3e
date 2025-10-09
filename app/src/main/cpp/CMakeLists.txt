@@ -55,5 +55,5 @@ target_sources(emu
 )
 
 target_link_libraries(emu PRIVATE rpcs3_emu)
-target_link_libraries(emu PRIVATE 3rdparty::yaml-cpp 3rdparty::hidapi 3rdparty::libusb 3rdparty::wolfssl 3rdparty::libcurl)
+target_link_libraries(emu PRIVATE 3rdparty::yaml-cpp 3rdparty::hidapi 3rdparty::libusb 3rdparty::wolfssl 3rdparty::libcurl 3rdparty::glslang 3rdparty::ffmpeg)
 target_link_libraries(emu PRIVATE android)

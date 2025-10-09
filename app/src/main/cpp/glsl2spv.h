@@ -11,7 +11,7 @@
 #include <cstdint>
 #include "vkapi.h"
 #include "glslang/Public/ShaderLang.h"
-#include "glslang/SPIRV/GlslangToSpv.h"
+#include "SPIRV/GlslangToSpv.h"
 #include "glslang/Include/glslang_c_interface.h"
 
 void glsl2spv_init(const VkPhysicalDeviceLimits& limits);

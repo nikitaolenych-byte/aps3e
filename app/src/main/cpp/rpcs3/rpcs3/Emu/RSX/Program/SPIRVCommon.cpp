@@ -13,7 +13,7 @@
 #endif
 #endif
 #include "glslang/Public/ShaderLang.h"
-#include "glslang/SPIRV/GlslangToSpv.h"
+#include "SPIRV/GlslangToSpv.h"
 #ifdef _MSC_VER
 #pragma warning(pop)
 #else

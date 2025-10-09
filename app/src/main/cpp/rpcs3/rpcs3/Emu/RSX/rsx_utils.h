@@ -7,7 +7,7 @@
 
 extern "C"
 {
-#include <libavutil/pixfmt.h>
+#include "libavutil/pixfmt.h"
 }
 
 #define RSX_SURFACE_DIMENSION_IGNORED 1
