@@ -176,9 +176,10 @@ LOG_CHANNEL(sys_log, "SYS");
 
 #include "aps3e_rp3_impl.cpp"
 
+#include "aps3e_util.cpp"
+
 #include "aps3e_emu.cpp"
 
-#include "aps3e_util.cpp"
 
 /*
 static jboolean j_install_firmware(JNIEnv* env,jobject self,jstring pup_path){
@@ -211,6 +212,35 @@ static jboolean j_install_pkg(JNIEnv* env,jobject self,jint pkg_fd){
     jboolean result= aps3e_util::install_pkg(pkg_fd);
     //env->ReleaseStringUTFChars(pkg_path,path);
     return result;
+}
+
+static jboolean j_install_edat(JNIEnv* env,jobject self,jint edat_fd){
+    fs::file edat_f=fs::file::from_fd(edat_fd);
+    NPD_HEADER npd_header;
+    EDAT_HEADER unused;
+
+    if(edat_f.size()<0x90){
+        LOGE("EDAT file is too small");
+        return false;
+    }
+    read_npd_edat_header(&edat_f,npd_header,unused);
+    if(memcmp(&npd_header.magic,"NPD\0",4)!=0){
+        LOGE("Invalid NPD header");
+        return false;
+    }
+    std::vector<uint8_t> edat_data(edat_f.size());
+    edat_f.seek(0);
+    edat_f.read(edat_data.data(),edat_data.size());
+    edat_f.close();
+
+    const std::string user_id="00000001";
+    std::string edat_save_path=std::format("{}dev_hdd0/home/{}/exdata/{}.edat",fs::get_config_dir(),user_id,npd_header.content_id);
+    //LOGI("Writing EDAT file to %s",edat_save_path.c_str());
+    if(!fs::write_file(edat_save_path, fs::open_mode::create + fs::open_mode::trunc,edat_data)){
+        LOGE("Failed to write EDAT file");
+        return false;
+    }
+    return true;
 }
 
 static jobject j_meta_info_from_dir(JNIEnv* env,jobject self,jstring jdir_path){
@@ -396,8 +426,7 @@ int register_aps3e_Emulator(JNIEnv* env){
             { "meta_info_from_iso","(ILjava/lang/String;)Laenu/aps3e/Emulator$MetaInfo;",(void*)j_meta_info_from_iso},
 
         { "setup_game_id", "(Ljava/lang/String;)V", (void *) j_setup_game_id },
-
-
+            {"install_edat", "(I)Z", (void *) j_install_edat},
 		{ "install_pkg", "(I)Z", (void *) j_install_pkg },
 
     };

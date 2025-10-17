@@ -80,7 +80,7 @@
     <string name="refresh_list">Aggiorna Lista</string>
     <string name="select_game">Seleziona Gioco</string>
     <string name="install_firmware">Installa Firmware</string>
-    <string name="install_game">Installa RAP/PKG</string>
+    <string name="install_game">Installa EDAT/RAP/PKG</string>
     <string name="installing_game">Installazione Gioco...</string>
     <string name="about">Informazioni</string>
     <string name="quit">Esci</string>

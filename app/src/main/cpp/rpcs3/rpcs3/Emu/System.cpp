@@ -2025,6 +2025,7 @@ game_boot_result Emulator::Load(const std::string& title_id, bool is_disc_patch,
 			std::string ins_dir = vfs::get("/dev_bdvd/PS3_GAME/INSDIR/");
 			std::string pkg_dir = vfs::get("/dev_bdvd/PS3_GAME/PKGDIR/");
 			std::string extra_dir = vfs::get("/dev_bdvd/PS3_EXTRA/");
+
 			fs::file lock_file;
 
 			for (const auto path_ptr : {&ins_dir, &pkg_dir, &extra_dir})
@@ -2032,12 +2033,12 @@ game_boot_result Emulator::Load(const std::string& title_id, bool is_disc_patch,
                 if(m_iso_fs){
                     if(!m_iso_fs->exists(*path_ptr))
                         path_ptr->clear();
-                    continue;
                 }
-				if (!fs::is_dir(*path_ptr))
-				{
-					path_ptr->clear();
-				}
+                else {
+                    if (!fs::is_dir(*path_ptr)) {
+                        path_ptr->clear();
+                    }
+                }
 			}
 
 			const std::string lock_file_path = fmt::format("%s%s%s_v%s", hdd0_game, u8"＄locks/", m_title_id, psf::get_string(disc_psf_obj, "APP_VER"));
@@ -2075,7 +2076,7 @@ game_boot_result Emulator::Load(const std::string& title_id, bool is_disc_patch,
 
                     for (auto& entry : m_iso_fs->list_dir(pkg_dir))
                     {
-                        if (entry.is_dir && entry.path.substr(pkg_dir.size()+1).starts_with("PKG"))
+                        if (entry.is_dir && entry.path.substr(pkg_dir.size()).starts_with("PKG"))
                         {
                             const std::string pkg_file = entry.path + "/INSTALL.PKG";
 
@@ -2093,7 +2094,7 @@ game_boot_result Emulator::Load(const std::string& title_id, bool is_disc_patch,
 
                     for (auto& entry : m_iso_fs->list_dir(extra_dir))
                     {
-                        if (entry.is_dir && entry.path.substr(pkg_dir.size()+1)[0] == 'D')
+                        if (entry.is_dir && entry.path.substr(pkg_dir.size())[0] == 'D')
                         {
                             const std::string pkg_file = entry.path + "/DATA000.PKG";
 
@@ -2161,8 +2162,7 @@ game_boot_result Emulator::Load(const std::string& title_id, bool is_disc_patch,
 			}
             }
 
-            //FIXME 未处理ISO安装PKG,PKG安装可能会引用同级目录的其他文件
-			if (!m_iso_fs&&!pkgs.empty())
+			if (!pkgs.empty())
 			{
 				bool install_success = true;
 				BlockingCallFromMainThread([this, &pkgs, &install_success]()

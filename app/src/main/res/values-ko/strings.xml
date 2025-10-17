@@ -74,7 +74,7 @@
 <string name="refresh_list">목록 새로 고침</string>
 <string name="select_game">게임 선택</string>
 <string name="install_firmware">펌웨어 설치</string>
-<string name="install_game">RAP/PKG 설치</string>
+<string name="install_game">EDAT/RAP/PKG 설치</string>
 <string name="installing_game">게임 설치 중...</string>
 <string name="about">정보</string>
 <string name="quit">종료</string>

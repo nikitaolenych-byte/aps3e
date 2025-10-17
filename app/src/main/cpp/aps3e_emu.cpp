@@ -272,7 +272,23 @@ namespace ae{
         callbacks.on_install_pkgs = [](const std::vector<std::string>& pkgs)
         {
             PRE("on_install_pkgs");
-            return true;
+            bool result=true;
+            if(pkgs[0][0]==':') {
+                for(const auto& pkg : pkgs){
+                    if(!aps3e_util::install_pkg(*Emu.GetIsoFs(),pkg)){
+                        result=false;
+                    }
+                }
+            }
+            else{
+                for (const auto& pkg : pkgs)
+                {
+                    if(!aps3e_util::install_pkg(pkg.c_str())){
+                        result=false;
+                    }
+                }
+            }
+            return result;
         };
 
         callbacks.try_to_quit = [](bool force_quit, std::function<void()> on_exit) -> bool

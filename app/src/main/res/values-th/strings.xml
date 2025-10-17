@@ -74,7 +74,7 @@
 	<string name="refresh_list">รีเฟรชรายชื่อ</string>
 	<string name="select_game">เลือกเกม</string>
 	<string name="install_firmware">ติดตั้งเฟิร์มแวร์</string>
-	<string name="install_game">ติดตั้ง RAP/PKG</string>
+	<string name="install_game">ติดตั้ง EDAT/RAP/PKG</string>
 	<string name="installing_game">กำลังติดตั้งเกม...</string>
 	<string name="about">เกี่ยวกับ</string>
 	<string name="quit">ออก</string>

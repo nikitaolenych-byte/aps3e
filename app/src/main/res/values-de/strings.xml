@@ -74,7 +74,7 @@
     <string name="refresh_list">Liste aktualisieren</string>
     <string name="select_game">Spiel auswählen</string>
     <string name="install_firmware">Firmware installieren</string>
-    <string name="install_game">RAP/PKG installieren</string>
+    <string name="install_game">EDAT/RAP/PKG installieren</string>
     <string name="installing_game">Spiel wird installiert...</string>
     <string name="about">Über</string>
     <string name="quit">Beenden</string>

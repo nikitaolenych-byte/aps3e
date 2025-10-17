@@ -16,6 +16,44 @@
 
 LOG_CHANNEL(pkg_log, "PKG");
 
+package_reader::package_reader(iso_fs& iso_fs, const std::string& entry_path)
+        :m_iso_fs(&iso_fs), m_path(entry_path)
+{
+    if (!m_file.open(iso_fs, entry_path))
+    {
+        pkg_log.error("PKG file not found!");
+        return;
+    }
+
+    m_is_valid = read_header();
+
+    if (!m_is_valid)
+    {
+        return;
+    }
+
+    m_is_valid = read_metadata();
+
+    if (!m_is_valid)
+    {
+        return;
+    }
+
+    m_is_valid = set_decryption_key();
+
+    if (!m_is_valid)
+    {
+        return;
+    }
+
+    const bool param_sfo_found = read_param_sfo();
+
+    if (!param_sfo_found)
+    {
+        pkg_log.notice("PKG does not contain a PARAM.SFO");
+    }
+}
+
 package_reader::package_reader(const std::string& path)
 	: m_path(path)
 {
@@ -208,12 +246,18 @@ bool package_reader::read_header()
 		{
 			const std::string archive_filename = fmt::format("%s_%02d.pkg", name_wo_number, filelist.size());
 
-			fs::file archive_file(archive_filename);
-			if (!archive_file)
-			{
-				pkg_log.error("Missing part of the multi-files pkg: %s", archive_filename);
-				return false;
-			}
+			fs::file archive_file;
+            if(m_iso_fs&&name_wo_number[0]==':'){
+                if(!m_iso_fs->exists(archive_filename)){
+                    pkg_log.error("Missing part of the multi-files pkg: %s", archive_filename);
+                    return false;
+                }
+                ensure(archive_file.open(*m_iso_fs, archive_filename));
+            }
+            else if(!archive_file.open(archive_filename)){
+                pkg_log.error("Missing part of the multi-files pkg: %s", archive_filename);
+                return false;
+            }
 
 			const usz add_size = archive_file.size();
 

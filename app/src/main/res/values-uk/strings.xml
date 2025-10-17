@@ -74,7 +74,7 @@
 	<string name="refresh_list">Оновити список</string>
 	<string name="select_game">Вибрати гру</string>
 	<string name="install_firmware">Встановити прошивку</string>
-	<string name="install_game">Встановити RAP/PKG</string>
+	<string name="install_game">Встановити EDAT/RAP/PKG</string>
 	<string name="installing_game">Встановлення гри...</string>
 	<string name="about">Про додаток</string>
 	<string name="quit">Вийти</string>

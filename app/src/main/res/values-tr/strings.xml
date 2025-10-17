@@ -74,7 +74,7 @@
 	<string name="refresh_list">Listeyi Yenile</string>
 	<string name="select_game">Oyunu Seç</string>
 	<string name="install_firmware">Firmware Kur</string>
-	<string name="install_game">RAP/PKG Kur</string>
+	<string name="install_game">EDAT/RAP/PKG Kur</string>
 	<string name="installing_game">Oyun Kuruluyor...</string>
 	<string name="about">Hakkında</string>
 	<string name="quit">Çık</string>

@@ -63,7 +63,7 @@
     <string name="refresh_list">Atualizar Lista</string>
     <string name="select_game">Selecionar Jogo</string>
     <string name="install_firmware">Instalar Firmware</string>
-    <string name="install_game">Instalar RAP/PKG</string>
+    <string name="install_game">Instalar EDAT/RAP/PKG</string>
     <string name="installing_game">Instalando Jogo...</string>
     <string name="about">Sobre</string>
     <string name="quit">Sair</string>

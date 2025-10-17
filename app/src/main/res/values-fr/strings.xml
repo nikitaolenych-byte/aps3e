@@ -88,7 +88,7 @@
 	<string name="refresh_list">Actualiser la liste</string>
 	<string name="select_game">Sélectionner un jeu</string>
 	<string name="install_firmware">Installer le firmware</string>
-	<string name="install_game">Installer RAP/PKG</string>
+	<string name="install_game">Installer EDAT/RAP/PKG</string>
 	<string name="installing_game">Installation du jeu...</string>
 	<string name="about">À propos</string>
 	<string name="quit">Quitter</string>

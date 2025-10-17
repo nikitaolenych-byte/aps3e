@@ -75,7 +75,7 @@
 	<string name="refresh_list">刷新列表</string>
 	<string name="select_game">選擇遊戲</string>
 	<string name="install_firmware">安裝固件</string>
-	<string name="install_game">安裝RAP/PKG</string>
+	<string name="install_game">安裝EDAT/RAP/PKG</string>
 	<string name="installing_game">安裝遊戲中...</string>
 	<string name="about">關於</string>
 	<string name="quit">退出</string>

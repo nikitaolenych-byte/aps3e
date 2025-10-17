@@ -75,7 +75,7 @@
     <string name="refresh_list">به‌روز رسانی لیست</string>
     <string name="select_game">انتخاب بازی</string>
     <string name="install_firmware">نصب فیلم‌وار</string>
-    <string name="install_game">نصب RAP/PKG</string>
+    <string name="install_game">نصب RAP/PKG/EDAT</string>
     <string name="installing_game">در حال نصب بازی...</string>
     <string name="about">درباره</string>
     <string name="quit">خروج</string>

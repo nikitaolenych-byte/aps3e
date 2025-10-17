@@ -182,6 +182,11 @@ public class AboutActivity extends AppCompatActivity {
                 + "1.30(2025-08-20)\n"
                 //+ " *同步部分RPCS3更新（0820）\n"
                 + " *回退掉RPCS3更新\n"
+                + "1.31(2025-10-17)\n"
+                + " *修复iso文件内日期不解析的bug\n"
+                + " *修复sys_fs解析iso目录的问题\n"
+                + " *打开DG类游戏时，自动安装PKG（需要删除config/dev_hdd0/game/$locks目录一次）\n"
+                + " *可安装edat\n"
                 + " \n";
 
         return log;

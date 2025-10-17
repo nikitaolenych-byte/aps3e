@@ -75,7 +75,7 @@
 	<string name="refresh_list">Làm mới Danh sách</string>
 	<string name="select_game">Chọn Trò chơi</string>
 	<string name="install_firmware">Cài đặt Firmware</string>
-	<string name="install_game">Cài đặt RAP/PKG</string>
+	<string name="install_game">Cài đặt EDAT/RAP/PKG</string>
 	<string name="installing_game">Đang cài đặt Trò chơi...</string>
 	<string name="about">Giới thiệu</string>
 	<string name="quit">Thoát</string>

@@ -65,9 +65,15 @@ bool iso_fs::load(){
         return false;
 }
 
+static std::string path_fix(const std::string& path){
+    std::string path_fix=path;
+    if(path_fix.back()=='/')
+        path_fix.pop_back();
+    return path_fix;
+}
 
 bool iso_fs::exists(const std::string& path){
-    return files.find(path)!=files.end();
+    return files.find(path_fix(path))!=files.end();
 }
 
 std::vector<uint8_t> iso_fs::get_data_tiny(const std::string& path){
@@ -92,7 +98,7 @@ std::vector<uint8_t> iso_fs::get_data_tiny(const std::string& path){
 }
 
 std::vector<iso_fs::entry_t>& iso_fs::list_dir(const std::string& path){
-    return tree[path];
+    return tree[path_fix(path)];
 }
 
 iso_fs::~iso_fs()

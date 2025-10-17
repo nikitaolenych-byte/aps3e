@@ -175,18 +175,29 @@ namespace aps3e_util{
         return true;
     }
 
+    bool install_pkg(iso_fs& iso_fs, const std::string& path){
 
-    /*bool install_pkg(const char* path){
+        std::deque<package_reader> readers;
+        readers.emplace_back(iso_fs, path);
+
+        std::deque<std::string> bootable_paths;
+
+        package_install_result result = package_reader::extract_data(readers, bootable_paths);
+        LOGW("install_pkg %d %s %s",result.error,result.version.expected.c_str(),result.version.found.c_str());
+        return result.error == package_install_result::error_type::no_error;
+    }
+
+    bool install_pkg(const char* path){
         std::deque<package_reader> readers;
         readers.emplace_back(std::string(path));
 
         std::deque<std::string> bootable_paths;
 
         package_install_result result = package_reader::extract_data(readers, bootable_paths);
-        LOGE("install_pkg %d %s %s",result.error,result.version.expected.c_str(),result.version.found.c_str());
+        LOGW("install_pkg %d %s %s",result.error,result.version.expected.c_str(),result.version.found.c_str());
         return result.error == package_install_result::error_type::no_error;
 
-    }*/
+    }
     bool install_pkg(int pkg_fd){
         std::deque<package_reader> readers;
         readers.emplace_back(fs::file::from_fd(pkg_fd));
@@ -194,7 +205,7 @@ namespace aps3e_util{
         std::deque<std::string> bootable_paths;
 
         package_install_result result = package_reader::extract_data(readers, bootable_paths);
-        LOGE("install_pkg %d %s %s",result.error,result.version.expected.c_str(),result.version.found.c_str());
+        LOGW("install_pkg %d %s %s",result.error,result.version.expected.c_str(),result.version.found.c_str());
         return result.error == package_install_result::error_type::no_error;
 
     }

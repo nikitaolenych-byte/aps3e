@@ -489,6 +489,11 @@ public class MainActivity extends AppCompatActivity {
 							Toast.makeText(this, "Failed to install RAP", Toast.LENGTH_SHORT).show();
 						}
 					}
+					else if (fileName.endsWith(".edat")) {
+						if(!Emulator.get.install_edat(pfd)){
+							Toast.makeText(this, "Failed to install EDAT", Toast.LENGTH_SHORT).show();
+						}
+					}
 					break;
 			}
 		}
@@ -679,8 +684,11 @@ public class MainActivity extends AppCompatActivity {
 				"aps3e/config/dev_hdd0",
 				"aps3e/config/dev_hdd1",
 				"aps3e/config/dev_hdd0/game",
-				"aps3e/config/Icons",
+				"aps3e/config/dev_hdd0/home",
+				"aps3e/config/dev_hdd0/home/00000001",
+				"aps3e/config/dev_hdd0/home/00000001/exdata",
 				"aps3e/config/games",
+				"aps3e/config/Icons",
 				"aps3e/config/Icons/ui",
 				"aps3e/config/custom_cfg",
 				"aps3e/logs",

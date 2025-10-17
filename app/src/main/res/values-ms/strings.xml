@@ -75,7 +75,7 @@
 	<string name="refresh_list">Segarkan Senarai</string>
 	<string name="select_game">Pilih Permainan</string>
 	<string name="install_firmware">Pasang Firmware</string>
-	<string name="install_game">Pasang RAP/PKG</string>
+	<string name="install_game">Pasang EDAT/RAP/PKG</string>
 	<string name="installing_game">Memasang Permainan...</string>
 	<string name="about">Tentang</string>
 	<string name="quit">Keluar</string>

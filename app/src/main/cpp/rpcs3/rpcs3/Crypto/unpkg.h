@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Loader/PSF.h"
+#include "Loader/iso.h"
 #include "util/endian.hpp"
 #include "util/types.hpp"
 #include "Utilities/File.h"
@@ -334,6 +335,7 @@ class package_reader
 public:
 	package_reader(const std::string& path);
     package_reader(fs::file&& file);
+    package_reader(iso_fs& iso_fs, const std::string& entry_path);
 	~package_reader();
 
 	enum result
@@ -385,6 +387,7 @@ private:
 	bool m_is_valid = false;
 	result m_result = result::not_started;
 
+    iso_fs* m_iso_fs = nullptr;
 	std::string m_path{};
 	std::string m_install_dir{};
 	fs::file m_file{};

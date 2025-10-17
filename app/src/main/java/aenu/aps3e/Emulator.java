@@ -517,7 +517,9 @@ public class Emulator extends aenu.emulator.Emulator
 	public native boolean install_firmware(int pup_file_fd);
 
 	public boolean install_rap(int pfd,String rap_name){
-		File rap_dir=new File(Application.get_app_data_dir(),"config/dev_hdd0/home/00000001/exdata");
+		final String user_id="00000001";
+		final String child=String.format("config/dev_hdd0/home/%s/exdata",user_id);
+		final File rap_dir=new File(Application.get_app_data_dir(),child);
 		ParcelFileDescriptor rap_file_in=ParcelFileDescriptor.adoptFd(pfd);
 		if(!rap_dir.exists()) rap_dir.mkdirs();
 		File rap_file_out=new File(rap_dir,rap_name);
@@ -540,6 +542,8 @@ public class Emulator extends aenu.emulator.Emulator
         }
         return true;
 	}
+
+	public native boolean install_edat(int pfd);
 	public native boolean install_pkg(int pkg_fd);
 
 	//public native boolean inatall_iso(String iso_path,String game_dir);
