@@ -668,7 +668,7 @@ public class MainActivity extends AppCompatActivity {
 			else
 				Toast.makeText(this, R.string.no_found_trophy_info, Toast.LENGTH_SHORT).show();
 		}
-		else if(item_id==R.id.create_ppu_cache){
+		/*else if(item_id==R.id.create_ppu_cache){
 			Emulator.MetaInfo meta_info=adapter.getMetaInfo(position);
 			Intent intent=new Intent(this,PPUCacheBuildService.class);
 			intent.putExtra(PPUCacheBuildService.EXTRA_META_INFO, meta_info);
@@ -676,7 +676,7 @@ public class MainActivity extends AppCompatActivity {
 			if(!PPUCacheBuildService.isBuilding(meta_info)){
 				startService(intent);
 			}
-		}
+		}*/
 		else if(item_id==R.id.delete_ppu_cache){
 			show_verify_dialog(R.string.delete_ppu_cache, new DialogInterface.OnClickListener() {
 				@Override

@@ -21,10 +21,9 @@
     <item
         android:id="@+id/show_trophy_info"
         android:title="@string/show_trophy_info"/>
-    <item
+    <!--item
         android:id="@+id/create_ppu_cache"
-        android:title="@string/create_ppu_cache"/>
-
+        android:title="@string/create_ppu_cache"/-->
     <item
         android:id="@+id/delete_ppu_cache"
         android:title="@string/delete_ppu_cache"/>

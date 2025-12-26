@@ -3,15 +3,15 @@
 
 	<!--安卓高版本创建socket需要-->
 	<uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!--uses-permission android:name="android.permission.POST_NOTIFICATIONS" /-->
+	<!--uses-permission android:name="android.permission.FOREGROUND_SERVICE" /-->
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+	<!--uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" /-->
 	<application android:label="@string/app_name"
 		android:name="aenu.aps3e.Application"
 		android:allowNativeHeapPointerTagging="false"
@@ -38,11 +38,11 @@
 			android:exported="false"
 			android:label="@string/app_name">
 		</activity>
-		<service
+		<!--service
 			android:name="aenu.aps3e.PPUCacheBuildService"
 			android:foregroundServiceType="specialUse"
 			android:exported="false">
-		</service>
+		</service-->
 
 		<activity android:name="aenu.aps3e.AboutActivity"
 			android:exported="false"
