@@ -2,6 +2,14 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+def aps3eSd8sGen3 = project.hasProperty('aps3eSd8sGen3') && project.property('aps3eSd8sGen3').toString() == 'true'
+
+def releaseStoreFile = (project.findProperty('RELEASE_STORE_FILE') ?: System.getenv('RELEASE_STORE_FILE'))
+def releaseStorePassword = (project.findProperty('RELEASE_STORE_PASSWORD') ?: System.getenv('RELEASE_STORE_PASSWORD'))
+def releaseKeyAlias = (project.findProperty('RELEASE_KEY_ALIAS') ?: System.getenv('RELEASE_KEY_ALIAS'))
+def releaseKeyPassword = (project.findProperty('RELEASE_KEY_PASSWORD') ?: System.getenv('RELEASE_KEY_PASSWORD'))
+def hasReleaseSigning = releaseStoreFile != null && releaseStorePassword != null && releaseKeyAlias != null && releaseKeyPassword != null
+
 android {
     namespace 'aenu.aps3e'
     compileSdk 35
@@ -19,6 +27,8 @@ android {
         externalNativeBuild {
             cmake {
                 abiFilters 'arm64-v8a'
+                // Enable with: ./gradlew :app:assembleRelease -Paps3eSd8sGen3=true
+                arguments "-DAPS3E_SNAPDRAGON_8S_GEN3_OPT=${aps3eSd8sGen3 ? 'ON' : 'OFF'}"
                 cppFlags ''
             }
         }
@@ -32,6 +42,12 @@ android {
 
     signingConfigs {
         release {
+            if (hasReleaseSigning) {
+                storeFile file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
         }
         debug {
         }
@@ -41,7 +57,8 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            // If no real keystore is provided, sign with debug key so the APK is installable.
+            signingConfig hasReleaseSigning ? signingConfigs.release : signingConfigs.debug
         }
         debug {
             minifyEnabled false

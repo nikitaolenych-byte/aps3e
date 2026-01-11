@@ -11,7 +11,30 @@ cmake_minimum_required(VERSION 3.22.1)
 # build script scope).
 project("aps3e")
 
-add_compile_options(-march=armv8-a)
+include(CheckCXXCompilerFlag)
+
+option(APS3E_SNAPDRAGON_8S_GEN3_OPT "Aggressive ARM64 flags for Snapdragon 8s Gen 3 class devices (may reduce compatibility)" OFF)
+
+function(aps3e_try_add_cxx_flag flag)
+        string(MAKE_C_IDENTIFIER "${flag}" _flag_id)
+        check_cxx_compiler_flag("${flag}" "APS3E_HAS_${_flag_id}")
+        if (APS3E_HAS_${_flag_id})
+                add_compile_options("${flag}")
+        endif()
+endfunction()
+
+if(ANDROID AND CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
+        if(APS3E_SNAPDRAGON_8S_GEN3_OPT)
+                aps3e_try_add_cxx_flag("-march=armv9-a+sve2")
+                aps3e_try_add_cxx_flag("-mcpu=cortex-x4")
+                add_compile_options("$<$<CONFIG:Release>:-Ofast>")
+        else()
+                add_compile_options(-march=armv8-a)
+        endif()
+else()
+        add_compile_options(-march=armv8-a)
+endif()
+
 add_compile_options(-stdlib=libc++)
 #add_compile_options(-flto=thin)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

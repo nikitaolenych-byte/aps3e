@@ -313,6 +313,29 @@ static void fixup_settings(const psf::registry* _psf)
 	}
 }
 
+static void aps3e_apply_nce_env_overrides()
+{
+	// NOTE: PS3 guest ISA is PowerPC/SPU. On ARM64 hosts this cannot be executed "natively".
+	// This toggle is therefore a convenience switch that forces the existing LLVM recompilers
+	// (PPU/SPU) and their fast direct-memory access paths.
+	if (const char* p = std::getenv("APS3E_NCE"); !p || p[0] != '1')
+	{
+		return;
+	}
+
+	g_cfg.core.ppu_decoder.set(ppu_decoder_type::llvm);
+	g_cfg.core.spu_decoder.set(spu_decoder_type::llvm);
+	g_cfg.core.llvm_precompilation.set(true);
+
+	if (const char* cpu = std::getenv("APS3E_LLVM_CPU"); cpu && *cpu)
+	{
+		g_cfg.core.llvm_cpu.set(cpu);
+	}
+
+	const std::string cpu_str = g_cfg.core.llvm_cpu.to_string();
+	sys_log.notice("APS3E_NCE=1: forcing LLVM recompilers (PPU/SPU)%s", cpu_str.empty() ? "" : fmt::format(", llvm_cpu={}", cpu_str).c_str());
+}
+
 extern void dump_executable(std::span<const u8> data, const ppu_module<lv2_obj>* _module, std::string_view title_id)
 {
 	std::string_view filename = _module->path;
@@ -490,6 +513,7 @@ void Emulator::Init()
 
 	// Disable incompatible settings
 	fixup_settings(nullptr);
+	aps3e_apply_nce_env_overrides();
 
 	// Backup config
 	g_backup_cfg.from_string(g_cfg.to_string());
@@ -1550,6 +1574,12 @@ game_boot_result Emulator::Load(const std::string& title_id, bool is_disc_patch,
 
 			// Disable incompatible settings
 			fixup_settings(&_psf);
+
+			// Game-specific HLE hacks
+			if (m_title_id == "BLUS31410" || m_title_id == "BLES02021" || m_title_id == "NPEB01997" || m_title_id == "BLJM61194")
+			{
+				g_cfg.video.write_color_buffers.set(true);
+			}
 
 			// Force audio provider
 			if (m_path.ends_with("vsh.self"sv))

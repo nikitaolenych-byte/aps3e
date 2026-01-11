@@ -125,11 +125,23 @@ __attribute__((constructor)) static void init_localized_strings()
 }
 
 extern std::string rp3_get_config_dir(){
-    return std::string(getenv("APS3E_DATA_DIR"))+"/config/";
+    if (const char* p = getenv("APS3E_DATA_DIR"); p && *p)
+    {
+        return std::string(p) + "/config/";
+    }
+    return "./config/";
 }
 
 extern std::string rp3_get_cache_dir(){
-    return std::string (getenv("APS3E_DATA_DIR"))+"/cache/";
+    if (const char* p = getenv("APS3E_CACHE_DIR"); p && *p)
+    {
+        return std::string(p) + "/";
+    }
+    if (const char* p = getenv("APS3E_DATA_DIR"); p && *p)
+    {
+        return std::string(p) + "/cache/";
+    }
+    return "./cache/";
 }
 
 extern VkPhysicalDeviceLimits get_physical_device_limits(){

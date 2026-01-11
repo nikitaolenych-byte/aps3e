@@ -18,12 +18,52 @@
 #include "util/sysinfo.hpp"
 #include "util/fnv_hash.hpp"
 
+#include <zstd.h>
+
 namespace rsx
 {
 	template <typename pipeline_storage_type, typename backend_storage>
 	class shaders_cache
 	{
 		using unpacked_type = std::vector<std::tuple<pipeline_storage_type, RSXVertexProgram, RSXFragmentProgram>>;
+
+		static bool zstd_enabled()
+		{
+			if (const char* p = std::getenv("APS3E_SHADER_CACHE_ZSTD"); p && p[0] == '1')
+			{
+				return true;
+			}
+			return false;
+		}
+
+		static bool zstd_decompress_exact(std::vector<u8>& out, const std::vector<u8>& in, usz expected_size)
+		{
+			const unsigned long long content_size = ZSTD_getFrameContentSize(in.data(), in.size());
+			if (content_size == ZSTD_CONTENTSIZE_ERROR || content_size == ZSTD_CONTENTSIZE_UNKNOWN)
+			{
+				return false;
+			}
+			if (expected_size != umax && content_size != expected_size)
+			{
+				return false;
+			}
+			out.resize(static_cast<usz>(content_size));
+			const usz res = ZSTD_decompress(out.data(), out.size(), in.data(), in.size());
+			return !ZSTD_isError(res) && res == out.size();
+		}
+
+		static bool zstd_compress(std::vector<u8>& out, const void* src, usz src_size, int level = 3)
+		{
+			out.resize(ZSTD_compressBound(src_size));
+			const usz res = ZSTD_compress(out.data(), out.size(), src, src_size, level);
+			if (ZSTD_isError(res))
+			{
+				out.clear();
+				return false;
+			}
+			out.resize(res);
+			return true;
+		}
 
 		struct pipeline_data
 		{
@@ -96,15 +136,31 @@ namespace rsx
 						continue;
 					}
 
-					if (f.size() != sizeof(pipeline_data))
-					{
-						rsx_log.error("Removing cached pipeline object %s since it's not binary compatible with the current shader cache", tmp.name.c_str());
-						fs::remove_file(filename);
-						continue;
-					}
-
 					pipeline_data pdata{};
-					f.read(&pdata, f.size());
+					if (tmp.name.ends_with(".bin.zst"))
+					{
+						std::vector<u8> in;
+						in.resize(f.size());
+						f.read(in.data(), in.size());
+						std::vector<u8> out;
+						if (!zstd_decompress_exact(out, in, sizeof(pipeline_data)))
+						{
+							rsx_log.error("Removing cached pipeline object %s (bad zstd frame)", tmp.name.c_str());
+							fs::remove_file(filename);
+							continue;
+						}
+						std::memcpy(&pdata, out.data(), sizeof(pipeline_data));
+					}
+					else
+					{
+						if (f.size() != sizeof(pipeline_data))
+						{
+							rsx_log.error("Removing cached pipeline object %s since it's not binary compatible with the current shader cache", tmp.name.c_str());
+							fs::remove_file(filename);
+							continue;
+						}
+						f.read(&pdata, sizeof(pipeline_data));
+					}
 
 					auto entry = unpack(pdata);
 
@@ -298,19 +354,35 @@ namespace rsx
 
 			pipeline_data data = pack(pipeline, vp, fp);
 
+			const bool use_zstd = zstd_enabled();
 			std::string fp_name = root_path + "/raw/" + fmt::format("%llX.fp", data.fragment_program_hash);
 			std::string vp_name = root_path + "/raw/" + fmt::format("%llX.vp", data.vertex_program_hash);
 
 			// Writeback to cache either if file does not exist or it is invalid (unexpected size)
 			// Note: fs::write_file is not atomic, if the process is terminated in the middle an empty file is created
-			if (fs::stat_t s{}; !fs::get_stat(fp_name, s) || s.size != fp.ucode_length)
+			if (use_zstd)
 			{
-				fs::write_file(fp_name, fs::rewrite, fp.get_data(), fp.ucode_length);
+				std::vector<u8> blob;
+				if (zstd_compress(blob, fp.get_data(), fp.ucode_length))
+				{
+					fs::write_file(fp_name + ".zst", fs::rewrite, blob);
+				}
+				if (zstd_compress(blob, vp.data.data(), vp.data.size() * sizeof(u32)))
+				{
+					fs::write_file(vp_name + ".zst", fs::rewrite, blob);
+				}
 			}
-
-			if (fs::stat_t s{}; !fs::get_stat(vp_name, s) || s.size != vp.data.size() * sizeof(u32))
+			else
 			{
-				fs::write_file(vp_name, fs::rewrite, vp.data);
+				if (fs::stat_t s{}; !fs::get_stat(fp_name, s) || s.size != fp.ucode_length)
+				{
+					fs::write_file(fp_name, fs::rewrite, fp.get_data(), fp.ucode_length);
+				}
+
+				if (fs::stat_t s{}; !fs::get_stat(vp_name, s) || s.size != vp.data.size() * sizeof(u32))
+				{
+					fs::write_file(vp_name, fs::rewrite, vp.data);
+				}
 			}
 
 			const u32 state_params[] =
@@ -333,33 +405,81 @@ namespace rsx
 			const usz state_hash = rpcs3::hash_array(state_params);
 
 			const std::string pipeline_file_name = fmt::format("%llX+%llX+%llX+%llX.bin", data.vertex_program_hash, data.fragment_program_hash, data.pipeline_storage_hash, state_hash);
-			const std::string pipeline_path = root_path + pipeline_class_name + "/" + pipeline_file_name;
-			fs::write_file(pipeline_path, fs::rewrite, &data, sizeof(data));
+			if (use_zstd)
+			{
+				std::vector<u8> blob;
+				if (zstd_compress(blob, &data, sizeof(data)))
+				{
+					const std::string pipeline_path = root_path + pipeline_class_name + "/" + pipeline_file_name + ".zst";
+					fs::write_file(pipeline_path, fs::rewrite, blob);
+				}
+			}
+			else
+			{
+				const std::string pipeline_path = root_path + pipeline_class_name + "/" + pipeline_file_name;
+				fs::write_file(pipeline_path, fs::rewrite, &data, sizeof(data));
+			}
 		}
 
 		RSXVertexProgram load_vp_raw(u64 program_hash) const
 		{
 			RSXVertexProgram vp = {};
-
-			fs::file f(fmt::format("%s/raw/%llX.vp", root_path, program_hash));
-			if (f) f.read(vp.data, f.size() / sizeof(u32));
+			const std::string base = fmt::format("%s/raw/%llX.vp", root_path, program_hash);
+			if (fs::file fz(base + ".zst"); fz)
+			{
+				std::vector<u8> in;
+				in.resize(fz.size());
+				fz.read(in.data(), in.size());
+				std::vector<u8> out;
+				if (zstd_decompress_exact(out, in, umax) && (out.size() % sizeof(u32) == 0))
+				{
+					vp.data.resize(out.size() / sizeof(u32));
+					std::memcpy(vp.data.data(), out.data(), out.size());
+				}
+			}
+			else if (fs::file f(base); f)
+			{
+				f.read(vp.data, f.size() / sizeof(u32));
+			}
 
 			return vp;
 		}
 
 		RSXFragmentProgram load_fp_raw(u64 program_hash)
 		{
-			fs::file f(fmt::format("%s/raw/%llX.fp", root_path, program_hash));
+			const std::string base = fmt::format("%s/raw/%llX.fp", root_path, program_hash);
+			fs::file fz(base + ".zst");
+			fs::file f = fz ? std::move(fz) : fs::file(base);
 
 			RSXFragmentProgram fp = {};
-
-			const u32 size = fp.ucode_length = f ? ::size32(f) : 0;
-
-			if (!size)
+			if (!f)
 			{
 				return fp;
 			}
 
+			if (base.ends_with(".fp"s) && f.get_name().ends_with(".zst"))
+			{
+				std::vector<u8> in;
+				in.resize(f.size());
+				f.read(in.data(), in.size());
+				std::vector<u8> out;
+				if (!zstd_decompress_exact(out, in, umax))
+				{
+					return fp;
+				}
+				fp.ucode_length = ::size32(out);
+				auto buf = std::make_unique<u8[]>(out.size());
+				std::memcpy(buf.get(), out.data(), out.size());
+				fp.data = buf.get();
+				fragment_program_data[fragment_program_data.push_begin()] = std::move(buf);
+				return fp;
+			}
+
+			const u32 size = fp.ucode_length = f ? ::size32(f) : 0;
+			if (!size)
+			{
+				return fp;
+			}
 			auto buf = std::make_unique<u8[]>(size);
 			fp.data = buf.get();
 			f.read(buf.get(), size);

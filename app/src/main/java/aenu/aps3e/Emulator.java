@@ -218,11 +218,22 @@ public class Emulator extends aenu.emulator.Emulator
 	}
 
 	public static void setup_preload_env(Application app){
-		aenu.lang.System.setenv("APS3E_DATA_DIR",app.get_app_data_dir().getAbsolutePath());
-		aenu.lang.System.setenv("APS3E_LOG_DIR",app.get_app_log_dir().getAbsolutePath());
-		aenu.lang.System.setenv("APS3E_NATIVE_LIB_DIR",app.get_native_lib_dir());
+		aenu.lang.System.setenv("APS3E_DATA_DIR", Application.get_app_data_dir().getAbsolutePath());
+		final File internalCacheDir = new File(Application.get_internal_data_dir(), "cache");
+		internalCacheDir.mkdirs();
+		aenu.lang.System.setenv("APS3E_CACHE_DIR", internalCacheDir.getAbsolutePath());
+		aenu.lang.System.setenv("APS3E_LOG_DIR", Application.get_app_log_dir().getAbsolutePath());
+		aenu.lang.System.setenv("APS3E_NATIVE_LIB_DIR", Application.get_native_lib_dir());
 		aenu.lang.System.setenv("APS3E_ANDROID_API_VERSION", Integer.toString(Build.VERSION.SDK_INT));
 		aenu.lang.System.setenv("APS3E_GLOBAL_CONFIG_YAML_PATH", Application.get_global_config_file().getAbsolutePath());
+
+		// Device-tuned defaults (safe to ignore on other GPUs)
+		if (Application.gpu_device_name_vk != null && Application.gpu_device_name_vk.contains("Adreno (TM) 735"))
+		{
+			aenu.lang.System.setenv("APS3E_NCE", "1");
+			aenu.lang.System.setenv("APS3E_ANDROID_BIG_CORE_AFFINITY", "1");
+			aenu.lang.System.setenv("APS3E_SHADER_CACHE_ZSTD", "1");
+		}
 
 		final String localized_string_keys[] = {
 			"INVALID",

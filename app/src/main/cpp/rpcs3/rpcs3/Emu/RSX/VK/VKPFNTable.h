@@ -45,6 +45,7 @@ auto _##func(Args&&... args)->decltype(func(args...)){ \
 #endif
 VK_FUNC(vkCreateInstance);
 VK_FUNC(vkDestroyInstance);
+VK_FUNC(vkEnumerateInstanceVersion);
 VK_FUNC(vkEnumeratePhysicalDevices);
 VK_FUNC(vkGetPhysicalDeviceFeatures);
 //VK_FUNC(vkGetPhysicalDeviceFeatures2KHR); // 注意：虽然属于KHR扩展，但属于1.0功能集

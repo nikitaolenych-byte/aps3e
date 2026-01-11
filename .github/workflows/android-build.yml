@@ -1,0 +1,70 @@
+name: Android APK (Release)
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android packages (SDK/NDK/CMake)
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sdkmanager --version
+          sdkmanager "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0" \
+            "cmake;3.22.1" \
+            "ndk;26.3.11579264"
+          yes | sdkmanager --licenses >/dev/null
+
+      - name: Prepare module Gradle file
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cp -f app/build.gradle.bak app/build.gradle
+
+      - name: Build Release APK
+        env:
+          # Keep Gradle memory reasonable on GitHub runners
+          GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8
+        shell: bash
+        run: |
+          set -euxo pipefail
+          chmod +x ./gradlew
+          ./gradlew :app:assembleRelease -Paps3eSd8sGen3=true --no-daemon --stacktrace
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aps3e-release-apk
+          path: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/apk/release/*/*.apk
+          if-no-files-found: error

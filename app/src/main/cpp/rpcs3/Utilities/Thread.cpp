@@ -2926,6 +2926,85 @@ u64 thread_ctrl::get_affinity_mask(thread_class group)
 #if 1
     const u64 all_cores_mask = process_affinity_mask;
 
+#if defined(__ANDROID__)
+	if (group == thread_class::ppu)
+	{
+		if (const char* p = std::getenv("APS3E_ANDROID_BIG_CORE_AFFINITY"); p && p[0] == '1')
+		{
+			static const u64 big_core_mask = []() -> u64
+			{
+				struct cpu_metric
+				{
+					int cpu{};
+					long long score{};
+				};
+
+				std::vector<cpu_metric> metrics;
+				metrics.reserve(16);
+
+				for (int cpu = 0; cpu < 64; cpu++)
+				{
+					const std::string cpu_dir = fmt::format("/sys/devices/system/cpu/cpu%d", cpu);
+					if (!fs::is_dir(cpu_dir))	// Reuse existing fs helper
+						continue;
+
+					long long score = 0;
+					{
+						fs::file f(cpu_dir + "/cpu_capacity");
+						if (f)
+						{
+							score = std::stoll(f.to_string());
+						}
+					}
+
+					if (score <= 0)
+					{
+						fs::file f(cpu_dir + "/cpufreq/cpuinfo_max_freq");
+						if (f)
+						{
+							score = std::stoll(f.to_string());
+						}
+					}
+
+					if (score > 0)
+					{
+						metrics.push_back(cpu_metric{cpu, score});
+					}
+				}
+
+				if (metrics.empty())
+				{
+					return u64{0};
+				}
+
+				long long max_score = 0;
+				for (const auto& m : metrics)
+					max_score = std::max(max_score, m.score);
+
+				if (max_score <= 0)
+					return u64{0};
+
+				const long long threshold = (max_score * 95) / 100; // 95% of max
+				u64 mask = 0;
+				for (const auto& m : metrics)
+				{
+					if (m.cpu >= 0 && m.cpu < 64 && m.score >= threshold)
+					{
+						mask |= (u64{1} << m.cpu);
+					}
+				}
+
+				return mask;
+			}();
+
+			if (big_core_mask)
+			{
+				return big_core_mask;
+			}
+		}
+	}
+#endif
+
     switch (group)
     {
         default:

@@ -92,7 +92,13 @@ namespace vk
 		app.applicationVersion = 0;
 		app.pEngineName = app_name;
 		app.engineVersion = 0;
-		app.apiVersion = VK_API_VERSION_1_0;
+		u32 inst_ver = VK_API_VERSION_1_0;
+		if (_vkEnumerateInstanceVersion)
+		{
+			_vkEnumerateInstanceVersion(&inst_ver);
+		}
+		// Prefer Vulkan 1.3 when available, otherwise fall back gracefully
+		app.apiVersion = (inst_ver >= VK_API_VERSION_1_3) ? VK_API_VERSION_1_3 : inst_ver;
 
 		// Set up instance information
 
