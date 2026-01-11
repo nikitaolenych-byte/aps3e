@@ -42,7 +42,8 @@ jobs:
             "build-tools;35.0.0" \
             "cmake;3.22.1" \
             "ndk;26.3.11579264"
-          yes | sdkmanager --licenses >/dev/null
+          # `yes` exits with SIGPIPE once sdkmanager stops reading; with `pipefail` this would fail the step.
+          yes | sdkmanager --licenses >/dev/null || true
 
       - name: Prepare module Gradle file
         shell: bash
